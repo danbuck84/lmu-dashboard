@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 interface ChartContainerProps {
   title: string;
   description?: string;
-  children: React.ReactNode;
+  children: React.ReactElement; // Changed from ReactNode to ReactElement
   className?: string;
   height?: number;
   options?: {
