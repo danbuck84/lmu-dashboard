@@ -4,17 +4,20 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Flag, LineChart, Timer, Trophy } from 'lucide-react';
 import { motion } from 'framer-motion';
+import Navigation from '@/components/Navigation';
 
 const Index = () => {
   const navigate = useNavigate();
 
   return (
     <div className="min-h-screen flex flex-col">
+      <Navigation />
+      
       {/* Hero Section */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-racing-black to-racing-gray opacity-90 z-0"></div>
         <div 
-          className="absolute inset-0 opacity-20 z-0 bg-[url('https://images.unsplash.com/photo-1580264214452-c77a0500a7e9')] bg-cover bg-center"
+          className="absolute inset-0 opacity-20 z-0 bg-cover bg-center"
           style={{ backgroundImage: "url('https://images.unsplash.com/photo-1580264214452-c77a0500a7e9')" }}
         ></div>
         
@@ -35,14 +38,14 @@ const Index = () => {
               <Button 
                 size="lg" 
                 className="bg-racing-red hover:bg-racing-red/90 text-white"
-                onClick={() => navigate('/dashboard')}
+                onClick={() => navigate('/race-log')}
               >
                 Go to Dashboard
               </Button>
               <Button 
                 variant="outline" 
                 size="lg" 
-                className="border-white text-white hover:bg-white/10"
+                className="border-white text-white bg-black/30 hover:bg-white/20"
                 onClick={() => navigate('/register')}
               >
                 Register Now
@@ -75,11 +78,11 @@ const Index = () => {
       </section>
       
       {/* Features Section */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-white dark:bg-slate-900">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold mb-4">Your Complete Racing Analytics Platform</h2>
-            <p className="text-slate-600 max-w-2xl mx-auto">
+            <p className="text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
               Comprehensive tools to help you analyze and improve your racing performance in Le Mans Ultimate.
             </p>
           </div>
@@ -90,13 +93,13 @@ const Index = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
               viewport={{ once: true }}
-              className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow"
+              className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition-shadow"
             >
               <div className="rounded-full w-12 h-12 bg-racing-blue/10 flex items-center justify-center mb-4">
                 <Flag className="text-racing-blue h-6 w-6" />
               </div>
               <h3 className="text-xl font-medium mb-2">Race Logging</h3>
-              <p className="text-slate-600">
+              <p className="text-slate-600 dark:text-slate-300">
                 Track every race with detailed information about your performance, car setup, and race conditions.
               </p>
             </motion.div>
@@ -106,13 +109,13 @@ const Index = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
               viewport={{ once: true }}
-              className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow"
+              className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition-shadow"
             >
               <div className="rounded-full w-12 h-12 bg-racing-red/10 flex items-center justify-center mb-4">
                 <LineChart className="text-racing-red h-6 w-6" />
               </div>
               <h3 className="text-xl font-medium mb-2">Performance Analysis</h3>
-              <p className="text-slate-600">
+              <p className="text-slate-600 dark:text-slate-300">
                 Visualize your performance trends with interactive charts and detailed analytics.
               </p>
             </motion.div>
@@ -122,13 +125,13 @@ const Index = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
               viewport={{ once: true }}
-              className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow"
+              className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition-shadow"
             >
               <div className="rounded-full w-12 h-12 bg-racing-black/10 flex items-center justify-center mb-4">
-                <Trophy className="text-racing-black h-6 w-6" />
+                <Trophy className="text-racing-black dark:text-white h-6 w-6" />
               </div>
               <h3 className="text-xl font-medium mb-2">Rating Progression</h3>
-              <p className="text-slate-600">
+              <p className="text-slate-600 dark:text-slate-300">
                 Track your Driver Rating and Safety Rating progress over time to monitor your improvement.
               </p>
             </motion.div>
@@ -138,13 +141,13 @@ const Index = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
               viewport={{ once: true }}
-              className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow"
+              className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition-shadow"
             >
               <div className="rounded-full w-12 h-12 bg-racing-silver/20 flex items-center justify-center mb-4">
-                <Timer className="text-racing-gray h-6 w-6" />
+                <Timer className="text-racing-gray dark:text-white h-6 w-6" />
               </div>
               <h3 className="text-xl font-medium mb-2">Lap Time Analysis</h3>
-              <p className="text-slate-600">
+              <p className="text-slate-600 dark:text-slate-300">
                 Analyze your lap times and compare your performance across different cars and tracks.
               </p>
             </motion.div>
@@ -153,11 +156,11 @@ const Index = () => {
       </section>
       
       {/* CTA Section */}
-      <section className="py-20 bg-slate-50">
+      <section className="py-20 bg-slate-50 dark:bg-slate-800">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl font-bold mb-4">Ready to Improve Your Racing Performance?</h2>
-            <p className="text-slate-600 mb-8">
+            <p className="text-slate-600 dark:text-slate-300 mb-8">
               Join our platform today and gain valuable insights into your racing performance. Track your progress, analyze your data, and become a better racer.
             </p>
             <Button 
