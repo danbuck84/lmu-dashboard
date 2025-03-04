@@ -20,20 +20,15 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 
 const formSchema = z.object({
-  username: z.string().min(3, {
-    message: "Username must be at least 3 characters.",
-  }),
   email: z.string().email({
     message: "Please enter a valid email address.",
   }),
   password: z.string().min(6, {
     message: "Password must be at least 6 characters.",
   }),
-  initialDR: z.coerce.number().min(0).max(2400).default(1200),
-  initialSR: z.coerce.number().min(0).max(99).default(75),
 });
 
-const Register = () => {
+const Login = () => {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { isAuthenticated } = useAuth();
@@ -48,11 +43,8 @@ const Register = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "",
       email: "",
       password: "",
-      initialDR: 1200,
-      initialSR: 75,
     },
   });
 
@@ -60,16 +52,9 @@ const Register = () => {
     setIsSubmitting(true);
     
     try {
-      const { data, error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email: values.email,
         password: values.password,
-        options: {
-          data: {
-            username: values.username,
-            initialDR: values.initialDR,
-            initialSR: values.initialSR,
-          }
-        }
       });
 
       if (error) {
@@ -78,10 +63,10 @@ const Register = () => {
         return;
       }
 
-      toast.success("Registration successful! You can now log in.");
+      toast.success("Login successful!");
       navigate('/race-log');
     } catch (error) {
-      console.error("Registration error:", error);
+      console.error("Login error:", error);
       toast.error("An unexpected error occurred");
     } finally {
       setIsSubmitting(false);
@@ -92,27 +77,14 @@ const Register = () => {
     <div className="container mx-auto py-10 flex justify-center items-center min-h-[80vh]">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">Register</CardTitle>
+          <CardTitle className="text-2xl font-bold">Login</CardTitle>
           <CardDescription>
-            Create your account to track your Le Mans Ultimate races
+            Sign in to your Le Mans Ultimate race tracker account
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="username"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Username</FormLabel>
-                    <FormControl>
-                      <Input placeholder="yourusername" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
               <FormField
                 control={form.control}
                 name="email"
@@ -139,45 +111,17 @@ const Register = () => {
                   </FormItem>
                 )}
               />
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="initialDR"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Initial Driver Rating</FormLabel>
-                      <FormControl>
-                        <Input type="number" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="initialSR"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Initial Safety Rating</FormLabel>
-                      <FormControl>
-                        <Input type="number" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
               <Button type="submit" className="w-full" disabled={isSubmitting}>
-                {isSubmitting ? "Registering..." : "Register"}
+                {isSubmitting ? "Logging in..." : "Login"}
               </Button>
             </form>
           </Form>
         </CardContent>
         <CardFooter className="flex justify-center">
           <p className="text-sm text-muted-foreground">
-            Already have an account?{" "}
-            <Button variant="link" className="p-0" onClick={() => navigate("/login")}>
-              Log in
+            Don't have an account?{" "}
+            <Button variant="link" className="p-0" onClick={() => navigate("/register")}>
+              Register
             </Button>
           </p>
         </CardFooter>
@@ -186,4 +130,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Login;

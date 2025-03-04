@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -25,31 +25,16 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PlusCircle } from 'lucide-react';
 import { toast } from "sonner";
-
-// Sample data - in a real app this would come from a database
-const cars = ["Porsche 911 GT3", "BMW M4 GT3", "Ferrari 296 GT3", "Toyota GR010"];
-const tracks = ["Le Mans", "Spa", "Monza", "Nürburgring"];
-const layouts = ["Full Circuit", "Bugatti Circuit", "GP Layout"];
-const sessionTypes = ["Practice", "Qualifying", "Race"];
+import { supabase } from '@/integrations/supabase/client';
 
 const formSchema = z.object({
   date: z.string().min(1, { message: "Date is required" }),
-  series: z.string().min(1, { message: "Series is required" }),
-  category: z.string().min(1, { message: "Category is required" }),
-  car: z.string().min(1, { message: "Car is required" }),
-  track: z.string().min(1, { message: "Track is required" }),
-  layout: z.string().min(1, { message: "Layout is required" }),
-  startPosition: z.coerce.number().int().min(1, { message: "Start position is required" }),
-  finishPosition: z.coerce.number().int().min(1, { message: "Finish position is required" }),
-  drChange: z.coerce.number().int(),
-  srChange: z.coerce.number().int(),
-  bestLapTime: z.string(),
-  sessionType: z.string(),
-  laps: z.coerce.number().int().min(1, { message: "Number of laps is required" }),
-  fuelConsumption: z.coerce.number().optional(),
-  tyreDegrad: z.coerce.number().optional(),
-  incidents: z.coerce.number().int().default(0),
-  notes: z.string().optional(),
+  car_id: z.string().min(1, { message: "Car is required" }),
+  track_layout_id: z.string().min(1, { message: "Track and layout are required" }),
+  start_position: z.coerce.number().int().min(1, { message: "Start position is required" }),
+  finish_position: z.coerce.number().int().min(1, { message: "Finish position is required" }),
+  driver_rating_change: z.coerce.number().int(),
+  safety_rating_change: z.coerce.number().int(),
 });
 
 type AddRaceDialogProps = {
@@ -58,47 +43,105 @@ type AddRaceDialogProps = {
 
 const AddRaceDialog = ({ onRaceAdded }: AddRaceDialogProps) => {
   const [open, setOpen] = useState(false);
+  const [cars, setCars] = useState<any[]>([]);
+  const [trackLayouts, setTrackLayouts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       date: new Date().toISOString().split('T')[0],
-      series: "",
-      category: "",
-      car: "",
-      track: "",
-      layout: "",
-      startPosition: 0,
-      finishPosition: 0,
-      drChange: 0,
-      srChange: 0,
-      bestLapTime: "",
-      sessionType: "Race",
-      laps: 0,
-      fuelConsumption: 0,
-      tyreDegrad: 0,
-      incidents: 0,
-      notes: "",
+      car_id: "",
+      track_layout_id: "",
+      start_position: 0,
+      finish_position: 0,
+      driver_rating_change: 0,
+      safety_rating_change: 0,
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // In a real app, this would be an API call to save the race data
-    const newRace = {
-      ...values,
-      id: Date.now(), // Generate a simple id
-      carTrackCombo: `${values.car} @ ${values.track} (${values.layout})`,
-    };
-    
-    // Save to localStorage for demo purposes
-    const races = JSON.parse(localStorage.getItem('races') || '[]');
-    races.push(newRace);
-    localStorage.setItem('races', JSON.stringify(races));
-    
-    onRaceAdded(newRace);
-    toast.success('Race added successfully!');
-    setOpen(false);
-    form.reset();
+  // Fetch cars and track layouts when dialog opens
+  useEffect(() => {
+    if (open) {
+      const fetchData = async () => {
+        try {
+          setLoading(true);
+          
+          // Get cars
+          const { data: carsData, error: carsError } = await supabase
+            .from('cars')
+            .select('*')
+            .order('model');
+            
+          if (carsError) throw carsError;
+          setCars(carsData || []);
+          
+          // Get track layouts with track names
+          const { data: layoutsData, error: layoutsError } = await supabase
+            .from('track_layouts')
+            .select('*, tracks(name)')
+            .order('name');
+            
+          if (layoutsError) throw layoutsError;
+          setTrackLayouts(layoutsData || []);
+        } catch (error) {
+          console.error('Error fetching data:', error);
+          toast.error('Failed to load form data');
+        } finally {
+          setLoading(false);
+        }
+      };
+      
+      fetchData();
+    }
+  }, [open]);
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      setLoading(true);
+      
+      // Get current user ID
+      const { data: sessionData } = await supabase.auth.getSession();
+      const userId = sessionData.session?.user.id;
+      
+      if (!userId) {
+        toast.error('User session not found');
+        return;
+      }
+      
+      // Insert race into database
+      const { data, error } = await supabase
+        .from('races')
+        .insert({
+          user_id: userId,
+          race_date: new Date(values.date).toISOString(),
+          car_id: values.car_id,
+          track_layout_id: values.track_layout_id,
+          start_position: values.start_position,
+          finish_position: values.finish_position,
+          driver_rating_change: values.driver_rating_change,
+          safety_rating_change: values.safety_rating_change,
+        })
+        .select(`
+          *,
+          cars(model, class),
+          track_layouts(name, track_id),
+          track_layouts.tracks(name)
+        `)
+        .single();
+        
+      if (error) throw error;
+      
+      toast.success('Race added successfully!');
+      onRaceAdded(data);
+      setOpen(false);
+      form.reset();
+    } catch (error) {
+      console.error("Error adding race:", error);
+      toast.error("Failed to add race");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -119,83 +162,28 @@ const AddRaceDialog = ({ onRaceAdded }: AddRaceDialogProps) => {
         
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="date"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Date *</FormLabel>
-                    <FormControl>
-                      <Input type="date" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="sessionType"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Session Type *</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select session type" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {sessionTypes.map((type) => (
-                          <SelectItem key={type} value={type}>{type}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="date"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Date *</FormLabel>
+                  <FormControl>
+                    <Input type="date" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="series"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Series *</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g. GT World Challenge" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="category"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Category *</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g. GT3, GTE" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            
-            <div className="grid grid-cols-3 gap-4">
-              <FormField
-                control={form.control}
-                name="car"
+                name="car_id"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Car *</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select car" />
@@ -203,7 +191,9 @@ const AddRaceDialog = ({ onRaceAdded }: AddRaceDialogProps) => {
                       </FormControl>
                       <SelectContent>
                         {cars.map((car) => (
-                          <SelectItem key={car} value={car}>{car}</SelectItem>
+                          <SelectItem key={car.id} value={car.id}>
+                            {car.model} ({car.class})
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -214,42 +204,21 @@ const AddRaceDialog = ({ onRaceAdded }: AddRaceDialogProps) => {
               
               <FormField
                 control={form.control}
-                name="track"
+                name="track_layout_id"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Track *</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormLabel>Track & Layout *</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select track" />
+                          <SelectValue placeholder="Select track and layout" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {tracks.map((track) => (
-                          <SelectItem key={track} value={track}>{track}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="layout"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Layout *</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select layout" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {layouts.map((layout) => (
-                          <SelectItem key={layout} value={layout}>{layout}</SelectItem>
+                        {trackLayouts.map((layout) => (
+                          <SelectItem key={layout.id} value={layout.id}>
+                            {layout.tracks?.name} ({layout.name})
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -262,7 +231,7 @@ const AddRaceDialog = ({ onRaceAdded }: AddRaceDialogProps) => {
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="startPosition"
+                name="start_position"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Start Position *</FormLabel>
@@ -276,7 +245,7 @@ const AddRaceDialog = ({ onRaceAdded }: AddRaceDialogProps) => {
               
               <FormField
                 control={form.control}
-                name="finishPosition"
+                name="finish_position"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Finish Position *</FormLabel>
@@ -289,13 +258,13 @@ const AddRaceDialog = ({ onRaceAdded }: AddRaceDialogProps) => {
               />
             </div>
             
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="drChange"
+                name="driver_rating_change"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>DR Change</FormLabel>
+                    <FormLabel>Driver Rating Change</FormLabel>
                     <FormControl>
                       <Input type="number" {...field} />
                     </FormControl>
@@ -306,110 +275,26 @@ const AddRaceDialog = ({ onRaceAdded }: AddRaceDialogProps) => {
               
               <FormField
                 control={form.control}
-                name="srChange"
+                name="safety_rating_change"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>SR Change</FormLabel>
+                    <FormLabel>Safety Rating Change</FormLabel>
                     <FormControl>
                       <Input type="number" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="bestLapTime"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Best Lap Time</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g. 1:45.678" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
-            
-            <div className="grid grid-cols-3 gap-4">
-              <FormField
-                control={form.control}
-                name="laps"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Number of Laps *</FormLabel>
-                    <FormControl>
-                      <Input type="number" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="fuelConsumption"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Fuel Consumption</FormLabel>
-                    <FormControl>
-                      <Input type="number" step="0.1" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="tyreDegrad"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tyre Degradation</FormLabel>
-                    <FormControl>
-                      <Input type="number" step="0.1" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            
-            <FormField
-              control={form.control}
-              name="incidents"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Incidents</FormLabel>
-                  <FormControl>
-                    <Input type="number" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="notes"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Notes</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
             
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
-              <Button type="submit">Save Race</Button>
+              <Button type="submit" disabled={loading}>
+                {loading ? "Saving..." : "Save Race"}
+              </Button>
             </DialogFooter>
           </form>
         </Form>

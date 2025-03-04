@@ -1,63 +1,90 @@
 
-import { useNavigate, Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { ThemeToggle } from '@/components/theme-toggle';
+import React from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { LogOut, User } from 'lucide-react';
+import { ThemeToggle } from './theme-toggle';
+import { Button } from './ui/button';
+import { toast } from 'sonner';
+import { UserCog, LogOut, TrendingUp } from 'lucide-react';
 
 const Navigation = () => {
+  const location = useLocation();
   const navigate = useNavigate();
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, logout, isAuthenticated } = useAuth();
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     navigate('/');
   };
 
+  const isActive = (path: string) => {
+    return location.pathname === path;
+  };
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
-      <div className="container flex h-14 items-center">
-        <div className="mr-4 flex">
-          <Link to="/" className="font-bold text-xl flex items-center">
-            Le Mans Tracker
-          </Link>
-        </div>
-        <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
-          <nav className="flex items-center space-x-4">
-            <Link to="/" className="text-sm font-medium transition-colors hover:text-primary">
-              Home
-            </Link>
-            {isAuthenticated && (
-              <Link to="/race-log" className="text-sm font-medium transition-colors hover:text-primary">
-                Race Log
+    <nav className="bg-background border-b border-border">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-16">
+          <div className="flex">
+            <div className="flex-shrink-0 flex items-center">
+              <Link to="/" className="font-bold text-xl">
+                LMU Tracker
               </Link>
-            )}
-          </nav>
-          <div className="flex items-center space-x-2">
+            </div>
+            <div className="hidden sm:ml-6 sm:flex sm:space-x-4">
+              <Link to="/" className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${isActive('/') ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
+                Home
+              </Link>
+              {isAuthenticated && (
+                <Link to="/race-log" className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${isActive('/race-log') ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
+                  Race Log
+                </Link>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center space-x-4">
             <ThemeToggle />
             
             {isAuthenticated ? (
-              <div className="flex items-center space-x-2">
-                <Button variant="ghost" size="sm" className="flex items-center gap-1">
-                  <User size={16} />
-                  <span>{user?.username}</span>
+              <>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => navigate('/user-settings')}
+                  className="flex items-center gap-1"
+                >
+                  <UserCog className="h-4 w-4" /> 
+                  Settings
                 </Button>
-                <Button variant="ghost" size="sm" onClick={handleLogout}>
-                  <LogOut className="h-4 w-4 mr-1" />
+                
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={handleLogout}
+                  className="flex items-center gap-1"
+                >
+                  <LogOut className="h-4 w-4" /> 
                   Logout
                 </Button>
-              </div>
+                
+                <div className="text-sm font-medium text-muted-foreground">
+                  {user?.username}
+                </div>
+              </>
             ) : (
-              <div className="flex items-center space-x-2">
-                <Button variant="ghost" size="sm" onClick={() => navigate('/register')}>
+              <>
+                <Button variant="ghost" size="sm" onClick={() => navigate('/login')}>
+                  Login
+                </Button>
+                <Button onClick={() => navigate('/register')}>
                   Register
                 </Button>
-              </div>
+              </>
             )}
           </div>
         </div>
       </div>
-    </header>
+    </nav>
   );
 };
 

@@ -9,7 +9,215 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      cars: {
+        Row: {
+          class: Database["public"]["Enums"]["car_class"]
+          created_at: string | null
+          id: string
+          model: string
+        }
+        Insert: {
+          class: Database["public"]["Enums"]["car_class"]
+          created_at?: string | null
+          id?: string
+          model: string
+        }
+        Update: {
+          class?: Database["public"]["Enums"]["car_class"]
+          created_at?: string | null
+          id?: string
+          model?: string
+        }
+        Relationships: []
+      }
+      countries: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          age: number | null
+          city: string | null
+          country_id: string | null
+          created_at: string | null
+          id: string
+          preferred_car_id: string | null
+          preferred_track_id: string | null
+          updated_at: string | null
+          username: string | null
+        }
+        Insert: {
+          age?: number | null
+          city?: string | null
+          country_id?: string | null
+          created_at?: string | null
+          id: string
+          preferred_car_id?: string | null
+          preferred_track_id?: string | null
+          updated_at?: string | null
+          username?: string | null
+        }
+        Update: {
+          age?: number | null
+          city?: string | null
+          country_id?: string | null
+          created_at?: string | null
+          id?: string
+          preferred_car_id?: string | null
+          preferred_track_id?: string | null
+          updated_at?: string | null
+          username?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_country_id_fkey"
+            columns: ["country_id"]
+            isOneToOne: false
+            referencedRelation: "countries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_preferred_car_id_fkey"
+            columns: ["preferred_car_id"]
+            isOneToOne: false
+            referencedRelation: "cars"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_preferred_track_id_fkey"
+            columns: ["preferred_track_id"]
+            isOneToOne: false
+            referencedRelation: "tracks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      races: {
+        Row: {
+          car_id: string | null
+          created_at: string | null
+          driver_rating_change: number | null
+          finish_position: number | null
+          id: string
+          race_date: string | null
+          safety_rating_change: number | null
+          start_position: number | null
+          track_layout_id: string | null
+          user_id: string
+        }
+        Insert: {
+          car_id?: string | null
+          created_at?: string | null
+          driver_rating_change?: number | null
+          finish_position?: number | null
+          id?: string
+          race_date?: string | null
+          safety_rating_change?: number | null
+          start_position?: number | null
+          track_layout_id?: string | null
+          user_id: string
+        }
+        Update: {
+          car_id?: string | null
+          created_at?: string | null
+          driver_rating_change?: number | null
+          finish_position?: number | null
+          id?: string
+          race_date?: string | null
+          safety_rating_change?: number | null
+          start_position?: number | null
+          track_layout_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "races_car_id_fkey"
+            columns: ["car_id"]
+            isOneToOne: false
+            referencedRelation: "cars"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "races_track_layout_id_fkey"
+            columns: ["track_layout_id"]
+            isOneToOne: false
+            referencedRelation: "track_layouts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      track_layouts: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+          track_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name: string
+          track_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string
+          track_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "track_layouts_track_id_fkey"
+            columns: ["track_id"]
+            isOneToOne: false
+            referencedRelation: "tracks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tracks: {
+        Row: {
+          country_id: string | null
+          created_at: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          country_id?: string | null
+          created_at?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          country_id?: string | null
+          created_at?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tracks_country_id_fkey"
+            columns: ["country_id"]
+            isOneToOne: false
+            referencedRelation: "countries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -18,7 +226,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      car_class: "Hypercars" | "GTE" | "LMGT3" | "LMP2"
     }
     CompositeTypes: {
       [_ in never]: never
