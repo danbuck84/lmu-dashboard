@@ -38,8 +38,12 @@ const RaceForm = ({ onSubmit, cars, trackLayouts, loading, defaultValues }: Race
       track_layout_id: defaultValues?.track_layout_id || "",
       start_position: defaultValues?.start_position || 0,
       finish_position: defaultValues?.finish_position || 0,
-      driver_rating_change: defaultValues?.driver_rating_change?.toString() || "0.00",
-      safety_rating_change: defaultValues?.safety_rating_change?.toString() || "0.00",
+      driver_rating_change: defaultValues?.driver_rating_change !== undefined 
+        ? defaultValues.driver_rating_change.toString() 
+        : "0.00",
+      safety_rating_change: defaultValues?.safety_rating_change !== undefined 
+        ? defaultValues.safety_rating_change.toString() 
+        : "0.00",
     },
   });
 
