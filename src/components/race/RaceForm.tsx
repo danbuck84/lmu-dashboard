@@ -1,4 +1,5 @@
 
+import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -14,10 +15,24 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RaceFormValues, raceFormSchema } from "./race-form-schema";
 
+type Car = {
+  id: string;
+  model: string;
+  class?: string;
+};
+
+type TrackLayout = {
+  id: string;
+  name: string;
+  tracks?: {
+    name: string;
+  };
+};
+
 interface RaceFormProps {
   onSubmit: (values: RaceFormValues) => Promise<void>;
-  cars: any[];
-  trackLayouts: any[];
+  cars: Car[];
+  trackLayouts: TrackLayout[];
   loading: boolean;
   defaultValues?: Partial<RaceFormValues>;
 }
@@ -37,7 +52,7 @@ const RaceForm = ({ onSubmit, cars, trackLayouts, loading, defaultValues }: Race
   });
 
   // Group cars by class
-  const carsByClass = cars.reduce((acc: { [key: string]: any[] }, car) => {
+  const carsByClass = cars.reduce((acc: { [key: string]: Car[] }, car) => {
     const carClass = car.class || 'Other';
     if (!acc[carClass]) {
       acc[carClass] = [];

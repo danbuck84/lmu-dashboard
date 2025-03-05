@@ -24,7 +24,14 @@ const StatisticCard: React.FC<StatisticCardProps> = ({ title, value, icon, descr
 );
 
 type RaceStatisticsProps = {
-  races: any[];
+  races: Array<{
+    finish_position: number;
+    start_position: number;
+    driver_rating_change: number | null;
+    safety_rating_change: number | null;
+    cars?: { model: string };
+    track_layouts?: { tracks?: { name: string } };
+  }>;
 };
 
 const RaceStatistics: React.FC<RaceStatisticsProps> = ({ races }) => {
@@ -46,12 +53,12 @@ const RaceStatistics: React.FC<RaceStatisticsProps> = ({ races }) => {
   
   // Calculate driver and safety rating changes
   const totalDrChange = races.reduce(
-    (sum, race) => sum + (parseFloat(race.driver_rating_change || 0)), 
+    (sum, race) => sum + (parseFloat(String(race.driver_rating_change || 0))), 
     0
   );
   
   const totalSrChange = races.reduce(
-    (sum, race) => sum + (parseFloat(race.safety_rating_change || 0)), 
+    (sum, race) => sum + (parseFloat(String(race.safety_rating_change || 0))), 
     0
   );
   

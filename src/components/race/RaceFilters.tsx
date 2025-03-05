@@ -26,9 +26,23 @@ export type FilterOptions = {
   positionChange?: 'improved' | 'declined' | 'same' | null;
 };
 
+type Car = {
+  id: string;
+  model: string;
+  class?: string;
+};
+
+type TrackLayout = {
+  id: string;
+  name: string;
+  tracks?: {
+    name: string;
+  };
+};
+
 type RaceFiltersProps = {
-  cars: any[];
-  trackLayouts: any[];
+  cars: Car[];
+  trackLayouts: TrackLayout[];
   filters: FilterOptions;
   setFilters: (filters: FilterOptions) => void;
   clearFilters: () => void;
@@ -42,7 +56,7 @@ const RaceFilters: React.FC<RaceFiltersProps> = ({
   clearFilters
 }) => {
   // Group cars by class
-  const carsByClass = cars.reduce((acc: { [key: string]: any[] }, car) => {
+  const carsByClass = cars.reduce((acc: { [key: string]: Car[] }, car) => {
     const carClass = car.class || 'Other';
     if (!acc[carClass]) {
       acc[carClass] = [];
