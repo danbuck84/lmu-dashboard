@@ -19,4 +19,8 @@ export const raceFormSchema = z.object({
     .transform(val => parseFloat(val)),
 });
 
+// This is the type before transform
+export type RaceFormInputValues = z.input<typeof raceFormSchema>;
+
+// This is the type after transform (what we get after validation)
 export type RaceFormValues = z.infer<typeof raceFormSchema>;

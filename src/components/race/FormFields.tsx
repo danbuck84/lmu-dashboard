@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { RaceFormValues } from "./race-form-schema";
+import type { RaceFormInputValues } from "./race-form-schema";
 
 type Car = {
   id: string;
@@ -27,7 +27,7 @@ type TrackLayout = {
   };
 };
 
-export const DateField = ({ control }: { control: Control<RaceFormValues> }) => (
+export const DateField = ({ control }: { control: Control<RaceFormInputValues> }) => (
   <FormField
     control={control}
     name="date"
@@ -43,7 +43,7 @@ export const DateField = ({ control }: { control: Control<RaceFormValues> }) => 
   />
 );
 
-export const CarField = ({ control, carsByClass }: { control: Control<RaceFormValues>, carsByClass: { [key: string]: Car[] } }) => (
+export const CarField = ({ control, carsByClass }: { control: Control<RaceFormInputValues>, carsByClass: { [key: string]: Car[] } }) => (
   <FormField
     control={control}
     name="car_id"
@@ -77,7 +77,7 @@ export const CarField = ({ control, carsByClass }: { control: Control<RaceFormVa
   />
 );
 
-export const TrackField = ({ control, sortedTrackLayouts }: { control: Control<RaceFormValues>, sortedTrackLayouts: TrackLayout[] }) => (
+export const TrackField = ({ control, sortedTrackLayouts }: { control: Control<RaceFormInputValues>, sortedTrackLayouts: TrackLayout[] }) => (
   <FormField
     control={control}
     name="track_layout_id"
@@ -104,7 +104,7 @@ export const TrackField = ({ control, sortedTrackLayouts }: { control: Control<R
   />
 );
 
-export const PositionFields = ({ control }: { control: Control<RaceFormValues> }) => (
+export const PositionFields = ({ control }: { control: Control<RaceFormInputValues> }) => (
   <>
     <FormField
       control={control}
@@ -136,7 +136,7 @@ export const PositionFields = ({ control }: { control: Control<RaceFormValues> }
   </>
 );
 
-export const RatingFields = ({ control }: { control: Control<RaceFormValues> }) => (
+export const RatingFields = ({ control }: { control: Control<RaceFormInputValues> }) => (
   <>
     <FormField
       control={control}

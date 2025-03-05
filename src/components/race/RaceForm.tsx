@@ -1,10 +1,9 @@
-
 import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { RaceFormValues, raceFormSchema } from "./race-form-schema";
+import { RaceFormValues, RaceFormInputValues, raceFormSchema } from "./race-form-schema";
 import { DateField, CarField, TrackField, PositionFields, RatingFields } from "./FormFields";
 
 type Car = {
@@ -30,7 +29,7 @@ interface RaceFormProps {
 }
 
 const RaceForm = ({ onSubmit, cars, trackLayouts, loading, defaultValues }: RaceFormProps) => {
-  const form = useForm<RaceFormValues>({
+  const form = useForm<RaceFormInputValues>({
     resolver: zodResolver(raceFormSchema),
     defaultValues: {
       date: defaultValues?.date || new Date().toISOString().split('T')[0],
