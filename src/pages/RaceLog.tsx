@@ -9,6 +9,7 @@ import RaceFilters from '@/components/race/RaceFilters';
 import RaceStatistics from '@/components/race/RaceStatistics';
 import RaceTable from '@/components/race/RaceTable';
 import { useRaceData } from '@/components/race/useRaceData';
+import { Card } from '@/components/ui/card';
 
 const RaceLog = () => {
   const { isAuthenticated } = useAuth();
@@ -60,7 +61,7 @@ const RaceLog = () => {
           </>
         )}
         
-        <div className="bg-card rounded-lg shadow p-6">
+        <Card className="p-6">
           {loading ? (
             <p className="text-center py-4">Loading races...</p>
           ) : filteredRaces.length > 0 ? (
@@ -70,7 +71,7 @@ const RaceLog = () => {
           ) : (
             <p className="text-muted-foreground text-center py-4">Your race logs will appear here. Add your first race to get started.</p>
           )}
-        </div>
+        </Card>
       </div>
     </div>
   );

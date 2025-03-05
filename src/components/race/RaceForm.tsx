@@ -44,42 +44,46 @@ const RaceForm = ({ onSubmit, cars, trackLayouts, loading, defaultValues }: Race
   });
 
   // Group cars by class
-  const carsByClass = cars.reduce((acc: { [key: string]: Car[] }, car) => {
-    const carClass = car.class || 'Other';
-    if (!acc[carClass]) {
-      acc[carClass] = [];
-    }
-    acc[carClass].push(car);
-    return acc;
-  }, {});
+  const carsByClass = React.useMemo(() => {
+    return cars.reduce((acc: { [key: string]: Car[] }, car) => {
+      const carClass = car.class || 'Other';
+      if (!acc[carClass]) {
+        acc[carClass] = [];
+      }
+      acc[carClass].push(car);
+      return acc;
+    }, {});
+  }, [cars]);
 
   // Sort track layouts alphabetically by track name and layout name
-  const sortedTrackLayouts = [...trackLayouts].sort((a, b) => {
-    const trackNameA = a.tracks?.name || '';
-    const trackNameB = b.tracks?.name || '';
-    
-    if (trackNameA !== trackNameB) {
-      return trackNameA.localeCompare(trackNameB);
-    }
-    
-    return a.name.localeCompare(b.name);
-  });
+  const sortedTrackLayouts = React.useMemo(() => {
+    return [...trackLayouts].sort((a, b) => {
+      const trackNameA = a.tracks?.name || '';
+      const trackNameB = b.tracks?.name || '';
+      
+      if (trackNameA !== trackNameB) {
+        return trackNameA.localeCompare(trackNameB);
+      }
+      
+      return a.name.localeCompare(b.name);
+    });
+  }, [trackLayouts]);
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <DateField control={form.control} />
         
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <CarField control={form.control} carsByClass={carsByClass} />
           <TrackField control={form.control} sortedTrackLayouts={sortedTrackLayouts} />
         </div>
         
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <PositionFields control={form.control} />
         </div>
         
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <RatingFields control={form.control} />
         </div>
         

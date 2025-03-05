@@ -38,7 +38,7 @@ const AddRaceDialog = ({ onRaceAdded }: AddRaceDialogProps) => {
         return;
       }
       
-      // Parse number values to ensure they are stored correctly
+      // Parse number values to ensure they are stored correctly as floats
       const driverRatingChange = parseFloat(values.driver_rating_change.toString());
       const safetyRatingChange = parseFloat(values.safety_rating_change.toString());
       
