@@ -32,14 +32,14 @@ interface RaceFormProps {
 const RaceForm = ({ onSubmit, cars, trackLayouts, loading, defaultValues }: RaceFormProps) => {
   const form = useForm<RaceFormValues>({
     resolver: zodResolver(raceFormSchema),
-    defaultValues: defaultValues || {
-      date: new Date().toISOString().split('T')[0],
-      car_id: "",
-      track_layout_id: "",
-      start_position: 0,
-      finish_position: 0,
-      driver_rating_change: "0.00",
-      safety_rating_change: "0.00",
+    defaultValues: {
+      date: defaultValues?.date || new Date().toISOString().split('T')[0],
+      car_id: defaultValues?.car_id || "",
+      track_layout_id: defaultValues?.track_layout_id || "",
+      start_position: defaultValues?.start_position || 0,
+      finish_position: defaultValues?.finish_position || 0,
+      driver_rating_change: defaultValues?.driver_rating_change?.toString() || "0.00",
+      safety_rating_change: defaultValues?.safety_rating_change?.toString() || "0.00",
     },
   });
 

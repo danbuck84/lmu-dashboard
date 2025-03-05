@@ -52,10 +52,16 @@ const AddRaceDialog = ({ onRaceAdded }: AddRaceDialogProps) => {
           safety_rating_change: values.safety_rating_change,
         })
         .select(`
-          *,
+          id,
+          race_date,
+          car_id,
           cars(model, class),
-          track_layouts(name, track_id),
-          track_layouts.tracks(name)
+          track_layout_id,
+          track_layouts(name, tracks(name)),
+          start_position,
+          finish_position,
+          driver_rating_change,
+          safety_rating_change
         `)
         .single();
         
