@@ -41,6 +41,28 @@ const RaceFilters: React.FC<RaceFiltersProps> = ({
   setFilters,
   clearFilters
 }) => {
+  // Group cars by class
+  const carsByClass = cars.reduce((acc: { [key: string]: any[] }, car) => {
+    const carClass = car.class || 'Other';
+    if (!acc[carClass]) {
+      acc[carClass] = [];
+    }
+    acc[carClass].push(car);
+    return acc;
+  }, {});
+
+  // Sort track layouts alphabetically by track name and layout name
+  const sortedTrackLayouts = [...trackLayouts].sort((a, b) => {
+    const trackNameA = a.tracks?.name || '';
+    const trackNameB = b.tracks?.name || '';
+    
+    if (trackNameA !== trackNameB) {
+      return trackNameA.localeCompare(trackNameB);
+    }
+    
+    return a.name.localeCompare(b.name);
+  });
+
   return (
     <Card className="mb-6">
       <CardContent className="pt-6">
@@ -56,10 +78,17 @@ const RaceFilters: React.FC<RaceFiltersProps> = ({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="">All cars</SelectItem>
-                {cars.map((car) => (
-                  <SelectItem key={car.id} value={car.id}>
-                    {car.model} ({car.class})
-                  </SelectItem>
+                {Object.entries(carsByClass).map(([carClass, carsInClass]) => (
+                  <React.Fragment key={carClass}>
+                    <SelectItem value={`__group_${carClass}`} disabled className="font-semibold bg-muted">
+                      {carClass}
+                    </SelectItem>
+                    {carsInClass.map((car) => (
+                      <SelectItem key={car.id} value={car.id}>
+                        {car.model}
+                      </SelectItem>
+                    ))}
+                  </React.Fragment>
                 ))}
               </SelectContent>
             </Select>
@@ -76,7 +105,7 @@ const RaceFilters: React.FC<RaceFiltersProps> = ({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="">All tracks</SelectItem>
-                {trackLayouts.map((layout) => (
+                {sortedTrackLayouts.map((layout) => (
                   <SelectItem key={layout.id} value={layout.id}>
                     {layout.tracks?.name} ({layout.name})
                   </SelectItem>

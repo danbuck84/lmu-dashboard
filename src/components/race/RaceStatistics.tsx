@@ -46,12 +46,12 @@ const RaceStatistics: React.FC<RaceStatisticsProps> = ({ races }) => {
   
   // Calculate driver and safety rating changes
   const totalDrChange = races.reduce(
-    (sum, race) => sum + (race.driver_rating_change || 0), 
+    (sum, race) => sum + (parseFloat(race.driver_rating_change || 0)), 
     0
   );
   
   const totalSrChange = races.reduce(
-    (sum, race) => sum + (race.safety_rating_change || 0), 
+    (sum, race) => sum + (parseFloat(race.safety_rating_change || 0)), 
     0
   );
   
@@ -112,7 +112,7 @@ const RaceStatistics: React.FC<RaceStatisticsProps> = ({ races }) => {
         
         <StatisticCard
           title="Rating Changes"
-          value={`DR: ${totalDrChange > 0 ? '+' : ''}${totalDrChange} / SR: ${totalSrChange > 0 ? '+' : ''}${totalSrChange}`}
+          value={`DR: ${totalDrChange > 0 ? '+' : ''}${totalDrChange.toFixed(2)} / SR: ${totalSrChange > 0 ? '+' : ''}${totalSrChange.toFixed(2)}`}
           icon={
             totalDrChange + totalSrChange >= 0 
               ? <TrendingUp className="h-5 w-5 text-green-500" />

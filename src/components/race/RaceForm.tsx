@@ -36,6 +36,28 @@ const RaceForm = ({ onSubmit, cars, trackLayouts, loading, defaultValues }: Race
     },
   });
 
+  // Group cars by class
+  const carsByClass = cars.reduce((acc: { [key: string]: any[] }, car) => {
+    const carClass = car.class || 'Other';
+    if (!acc[carClass]) {
+      acc[carClass] = [];
+    }
+    acc[carClass].push(car);
+    return acc;
+  }, {});
+
+  // Sort track layouts alphabetically by track name and layout name
+  const sortedTrackLayouts = [...trackLayouts].sort((a, b) => {
+    const trackNameA = a.tracks?.name || '';
+    const trackNameB = b.tracks?.name || '';
+    
+    if (trackNameA !== trackNameB) {
+      return trackNameA.localeCompare(trackNameB);
+    }
+    
+    return a.name.localeCompare(b.name);
+  });
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -67,10 +89,17 @@ const RaceForm = ({ onSubmit, cars, trackLayouts, loading, defaultValues }: Race
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {cars.map((car) => (
-                      <SelectItem key={car.id} value={car.id}>
-                        {car.model} ({car.class})
-                      </SelectItem>
+                    {Object.entries(carsByClass).map(([carClass, carsInClass]) => (
+                      <React.Fragment key={carClass}>
+                        <SelectItem value={`__group_${carClass}`} disabled className="font-semibold bg-muted">
+                          {carClass}
+                        </SelectItem>
+                        {carsInClass.map((car) => (
+                          <SelectItem key={car.id} value={car.id}>
+                            {car.model}
+                          </SelectItem>
+                        ))}
+                      </React.Fragment>
                     ))}
                   </SelectContent>
                 </Select>
@@ -92,7 +121,7 @@ const RaceForm = ({ onSubmit, cars, trackLayouts, loading, defaultValues }: Race
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {trackLayouts.map((layout) => (
+                    {sortedTrackLayouts.map((layout) => (
                       <SelectItem key={layout.id} value={layout.id}>
                         {layout.tracks?.name} ({layout.name})
                       </SelectItem>
@@ -143,7 +172,7 @@ const RaceForm = ({ onSubmit, cars, trackLayouts, loading, defaultValues }: Race
               <FormItem>
                 <FormLabel>Driver Rating Change</FormLabel>
                 <FormControl>
-                  <Input type="number" {...field} />
+                  <Input type="number" step="0.01" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -157,7 +186,7 @@ const RaceForm = ({ onSubmit, cars, trackLayouts, loading, defaultValues }: Race
               <FormItem>
                 <FormLabel>Safety Rating Change</FormLabel>
                 <FormControl>
-                  <Input type="number" {...field} />
+                  <Input type="number" step="0.01" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
