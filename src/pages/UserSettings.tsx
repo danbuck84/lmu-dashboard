@@ -39,6 +39,148 @@ const formSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof formSchema>;
 
+// Extract form fields into separate components for better readability
+const UsernameField = ({ control }: { control: any }) => (
+  <FormField
+    control={control}
+    name="username"
+    render={({ field }) => (
+      <FormItem>
+        <FormLabel>Username</FormLabel>
+        <FormControl>
+          <Input {...field} />
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+    )}
+  />
+);
+
+const CountryField = ({ control, countries }: { control: any, countries: any[] }) => (
+  <FormField
+    control={control}
+    name="country"
+    render={({ field }) => (
+      <FormItem>
+        <FormLabel>Country</FormLabel>
+        <Select 
+          onValueChange={field.onChange} 
+          defaultValue={field.value}
+          value={field.value}
+        >
+          <FormControl>
+            <SelectTrigger>
+              <SelectValue placeholder="Select a country" />
+            </SelectTrigger>
+          </FormControl>
+          <SelectContent>
+            {countries.map((country) => (
+              <SelectItem key={country.id} value={country.id}>
+                {country.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <FormMessage />
+      </FormItem>
+    )}
+  />
+);
+
+const CityField = ({ control }: { control: any }) => (
+  <FormField
+    control={control}
+    name="city"
+    render={({ field }) => (
+      <FormItem>
+        <FormLabel>City</FormLabel>
+        <FormControl>
+          <Input {...field} />
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+    )}
+  />
+);
+
+const AgeField = ({ control }: { control: any }) => (
+  <FormField
+    control={control}
+    name="age"
+    render={({ field }) => (
+      <FormItem>
+        <FormLabel>Age</FormLabel>
+        <FormControl>
+          <Input type="number" {...field} />
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+    )}
+  />
+);
+
+const PreferredCarField = ({ control, cars }: { control: any, cars: any[] }) => (
+  <FormField
+    control={control}
+    name="preferredCar"
+    render={({ field }) => (
+      <FormItem>
+        <FormLabel>Preferred Car</FormLabel>
+        <Select 
+          onValueChange={field.onChange} 
+          defaultValue={field.value}
+          value={field.value}
+        >
+          <FormControl>
+            <SelectTrigger>
+              <SelectValue placeholder="Select a car" />
+            </SelectTrigger>
+          </FormControl>
+          <SelectContent>
+            {cars.map((car) => (
+              <SelectItem key={car.id} value={car.id}>
+                {car.model} ({car.class})
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <FormMessage />
+      </FormItem>
+    )}
+  />
+);
+
+const PreferredTrackField = ({ control, tracks }: { control: any, tracks: any[] }) => (
+  <FormField
+    control={control}
+    name="preferredTrack"
+    render={({ field }) => (
+      <FormItem>
+        <FormLabel>Preferred Track</FormLabel>
+        <Select 
+          onValueChange={field.onChange} 
+          defaultValue={field.value}
+          value={field.value}
+        >
+          <FormControl>
+            <SelectTrigger>
+              <SelectValue placeholder="Select a track" />
+            </SelectTrigger>
+          </FormControl>
+          <SelectContent>
+            {tracks.map((track) => (
+              <SelectItem key={track.id} value={track.id}>
+                {track.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <FormMessage />
+      </FormItem>
+    )}
+  />
+);
+
 const UserSettings = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
@@ -73,29 +215,20 @@ const UserSettings = () => {
   useEffect(() => {
     const fetchReferenceData = async () => {
       try {
-        // Fetch cars
-        const { data: carsData, error: carsError } = await supabase
-          .from('cars')
-          .select('*');
+        // Fetch all data in parallel
+        const [carsResponse, countriesResponse, tracksResponse] = await Promise.all([
+          supabase.from('cars').select('*').order('model'),
+          supabase.from('countries').select('*').order('name'),
+          supabase.from('tracks').select('*, countries(name)').order('name')
+        ]);
         
-        if (carsError) throw carsError;
-        setCars(carsData || []);
-
-        // Fetch countries
-        const { data: countriesData, error: countriesError } = await supabase
-          .from('countries')
-          .select('*');
+        if (carsResponse.error) throw carsResponse.error;
+        if (countriesResponse.error) throw countriesResponse.error;
+        if (tracksResponse.error) throw tracksResponse.error;
         
-        if (countriesError) throw countriesError;
-        setCountries(countriesData || []);
-
-        // Fetch tracks
-        const { data: tracksData, error: tracksError } = await supabase
-          .from('tracks')
-          .select('*, countries(name)');
-        
-        if (tracksError) throw tracksError;
-        setTracks(tracksData || []);
+        setCars(carsResponse.data || []);
+        setCountries(countriesResponse.data || []);
+        setTracks(tracksResponse.data || []);
       } catch (error) {
         console.error('Error fetching reference data:', error);
         toast.error('Failed to load reference data');
@@ -215,137 +348,18 @@ const UserSettings = () => {
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <div className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="username"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Username</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <UsernameField control={form.control} />
                   
                   <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="country"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Country</FormLabel>
-                          <Select 
-                            onValueChange={field.onChange} 
-                            defaultValue={field.value}
-                            value={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select a country" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {countries.map((country) => (
-                                <SelectItem key={country.id} value={country.id}>
-                                  {country.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="city"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>City</FormLabel>
-                          <FormControl>
-                            <Input {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    <CountryField control={form.control} countries={countries} />
+                    <CityField control={form.control} />
                   </div>
                   
-                  <FormField
-                    control={form.control}
-                    name="age"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Age</FormLabel>
-                        <FormControl>
-                          <Input type="number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <AgeField control={form.control} />
                   
                   <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="preferredCar"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Preferred Car</FormLabel>
-                          <Select 
-                            onValueChange={field.onChange} 
-                            defaultValue={field.value}
-                            value={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select a car" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {cars.map((car) => (
-                                <SelectItem key={car.id} value={car.id}>
-                                  {car.model} ({car.class})
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="preferredTrack"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Preferred Track</FormLabel>
-                          <Select 
-                            onValueChange={field.onChange} 
-                            defaultValue={field.value}
-                            value={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select a track" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {tracks.map((track) => (
-                                <SelectItem key={track.id} value={track.id}>
-                                  {track.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    <PreferredCarField control={form.control} cars={cars} />
+                    <PreferredTrackField control={form.control} tracks={tracks} />
                   </div>
                 </div>
                 
