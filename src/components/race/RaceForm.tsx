@@ -38,8 +38,8 @@ const RaceForm = ({ onSubmit, cars, trackLayouts, loading, defaultValues }: Race
       track_layout_id: "",
       start_position: 0,
       finish_position: 0,
-      driver_rating_change: 0,
-      safety_rating_change: 0,
+      driver_rating_change: "0.00",
+      safety_rating_change: "0.00",
     },
   });
 

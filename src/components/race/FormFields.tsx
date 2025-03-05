@@ -7,6 +7,7 @@ import {
   FormLabel,
   FormControl,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -24,12 +25,6 @@ type TrackLayout = {
   tracks?: {
     name: string;
   };
-};
-
-type FormFieldsProps = {
-  control: Control<RaceFormValues>;
-  carsByClass: { [key: string]: Car[] };
-  sortedTrackLayouts: TrackLayout[];
 };
 
 export const DateField = ({ control }: { control: Control<RaceFormValues> }) => (
@@ -150,8 +145,11 @@ export const RatingFields = ({ control }: { control: Control<RaceFormValues> }) 
         <FormItem>
           <FormLabel>Driver Rating Change</FormLabel>
           <FormControl>
-            <Input type="number" step="0.01" {...field} />
+            <Input placeholder="0.00" {...field} />
           </FormControl>
+          <FormDescription>
+            Use dot (.) for decimal places, e.g., 8.40
+          </FormDescription>
           <FormMessage />
         </FormItem>
       )}
@@ -164,8 +162,11 @@ export const RatingFields = ({ control }: { control: Control<RaceFormValues> }) 
         <FormItem>
           <FormLabel>Safety Rating Change</FormLabel>
           <FormControl>
-            <Input type="number" step="0.01" {...field} />
+            <Input placeholder="0.00" {...field} />
           </FormControl>
+          <FormDescription>
+            Use dot (.) for decimal places, e.g., 8.40
+          </FormDescription>
           <FormMessage />
         </FormItem>
       )}

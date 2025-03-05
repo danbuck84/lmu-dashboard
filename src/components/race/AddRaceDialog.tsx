@@ -38,10 +38,6 @@ const AddRaceDialog = ({ onRaceAdded }: AddRaceDialogProps) => {
         return;
       }
       
-      // Parse number values to ensure they are stored correctly as floats
-      const driverRatingChange = parseFloat(values.driver_rating_change.toString());
-      const safetyRatingChange = parseFloat(values.safety_rating_change.toString());
-      
       // Insert race into database
       const { data, error } = await supabase
         .from('races')
@@ -52,8 +48,8 @@ const AddRaceDialog = ({ onRaceAdded }: AddRaceDialogProps) => {
           track_layout_id: values.track_layout_id,
           start_position: values.start_position,
           finish_position: values.finish_position,
-          driver_rating_change: driverRatingChange,
-          safety_rating_change: safetyRatingChange,
+          driver_rating_change: values.driver_rating_change,
+          safety_rating_change: values.safety_rating_change,
         })
         .select(`
           *,

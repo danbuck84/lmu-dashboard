@@ -38,10 +38,10 @@ const RaceLog = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-checkered-pattern bg-fixed bg-no-repeat bg-cover">
       <Navigation />
       
-      <div className="container mx-auto py-8 flex-1">
+      <div className="container mx-auto py-8 flex-1 relative z-10">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Race Log</h1>
           <AddRaceDialog onRaceAdded={handleRaceAdded} />
@@ -61,7 +61,7 @@ const RaceLog = () => {
           </>
         )}
         
-        <Card className="p-6">
+        <Card className="p-6 bg-white/90 dark:bg-card/90 backdrop-blur-sm">
           {loading ? (
             <p className="text-center py-4">Loading races...</p>
           ) : filteredRaces.length > 0 ? (
