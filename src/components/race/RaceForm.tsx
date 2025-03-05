@@ -1,3 +1,4 @@
+
 import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -72,9 +73,15 @@ const RaceForm = ({ onSubmit, cars, trackLayouts, loading, defaultValues }: Race
     });
   }, [trackLayouts]);
 
+  // Handle submit with proper type transformation
+  const handleFormSubmit = async (data: RaceFormInputValues) => {
+    // The zodResolver will transform the string values to numbers based on the schema
+    await onSubmit(data as unknown as RaceFormValues);
+  };
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-4">
         <DateField control={form.control} />
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
