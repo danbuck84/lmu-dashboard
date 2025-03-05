@@ -55,12 +55,12 @@ const RaceTable = ({ races, loading }: RaceTableProps) => {
               <td className="py-2 px-4 text-center">{race.finish_position}</td>
               <td className="py-2 px-4 text-center">
                 <span className={race.driver_rating_change > 0 ? 'text-green-500' : race.driver_rating_change < 0 ? 'text-red-500' : ''}>
-                  {race.driver_rating_change > 0 ? `+${race.driver_rating_change.toFixed(2)}` : race.driver_rating_change.toFixed(2)}
+                  {race.driver_rating_change > 0 ? `+${Number(race.driver_rating_change).toFixed(2)}` : Number(race.driver_rating_change).toFixed(2)}
                 </span>
               </td>
               <td className="py-2 px-4 text-center">
                 <span className={race.safety_rating_change > 0 ? 'text-green-500' : race.safety_rating_change < 0 ? 'text-red-500' : ''}>
-                  {race.safety_rating_change > 0 ? `+${race.safety_rating_change.toFixed(2)}` : race.safety_rating_change.toFixed(2)}
+                  {race.safety_rating_change > 0 ? `+${Number(race.safety_rating_change).toFixed(2)}` : Number(race.safety_rating_change).toFixed(2)}
                 </span>
               </td>
               <td className="py-2 px-4 text-center">

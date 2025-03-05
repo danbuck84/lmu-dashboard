@@ -37,6 +37,17 @@ const AddRaceDialog = ({ onRaceAdded }: AddRaceDialogProps) => {
         toast.error('User session not found');
         return;
       }
+
+      console.log("Race data to submit:", {
+        user_id: userId,
+        race_date: new Date(values.date).toISOString(),
+        car_id: values.car_id,
+        track_layout_id: values.track_layout_id,
+        start_position: values.start_position,
+        finish_position: values.finish_position,
+        driver_rating_change: values.driver_rating_change,
+        safety_rating_change: values.safety_rating_change,
+      });
       
       // Insert race into database
       const { data, error } = await supabase
