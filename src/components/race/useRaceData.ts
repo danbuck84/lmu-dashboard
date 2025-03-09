@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import type { FilterOptions } from './RaceFilters';
+import type { FilterOptions } from './filters/types';
 
 export function useRaceData() {
   const [races, setRaces] = useState<any[]>([]);
@@ -38,7 +38,10 @@ export function useRaceData() {
               start_position,
               finish_position,
               driver_rating_change,
-              safety_rating_change
+              safety_rating_change,
+              incidents,
+              notes,
+              qualifying_position
             `)
             .eq('user_id', userId)
             .order('race_date', { ascending: false }),
@@ -130,6 +133,16 @@ export function useRaceData() {
     setRaces(prevRaces => [newRace, ...prevRaces]);
   };
 
+  const handleRaceDeleted = (raceId: string) => {
+    setRaces(prevRaces => prevRaces.filter(race => race.id !== raceId));
+  };
+
+  const handleRaceUpdated = (updatedRace: any) => {
+    setRaces(prevRaces => 
+      prevRaces.map(race => race.id === updatedRace.id ? updatedRace : race)
+    );
+  };
+
   return {
     races,
     filteredRaces,
@@ -139,6 +152,8 @@ export function useRaceData() {
     filters,
     setFilters,
     clearFilters,
-    handleRaceAdded
+    handleRaceAdded,
+    handleRaceDeleted,
+    handleRaceUpdated
   };
 }

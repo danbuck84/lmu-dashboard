@@ -7,9 +7,25 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogFooter,
 } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
+import { Edit, Trash2 } from 'lucide-react';
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import EditRaceDialog from './EditRaceDialog';
 
 type Race = {
   id: string;
@@ -26,16 +42,22 @@ type Race = {
   incidents?: number;
   notes?: string;
   qualifying_position?: number;
+  car_id?: string;
+  track_layout_id?: string;
 };
 
 type RaceTableProps = {
   races: Race[];
   loading: boolean;
+  onRaceDeleted: (raceId: string) => void;
+  onRaceUpdated: (updatedRace: Race) => void;
 };
 
-const RaceTable = ({ races, loading }: RaceTableProps) => {
+const RaceTable = ({ races, loading, onRaceDeleted, onRaceUpdated }: RaceTableProps) => {
   const [selectedRace, setSelectedRace] = useState<Race | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   if (loading) {
     return <p className="text-center py-4">Loading races...</p>;
@@ -48,6 +70,32 @@ const RaceTable = ({ races, loading }: RaceTableProps) => {
   const viewRaceDetails = (race: Race) => {
     setSelectedRace(race);
     setDetailsOpen(true);
+  };
+  
+  const handleEditRace = (race: Race) => {
+    setSelectedRace(race);
+    setEditDialogOpen(true);
+  };
+
+  const handleDeleteRace = async (raceId: string) => {
+    try {
+      setDeleteLoading(true);
+      const { error } = await supabase
+        .from('races')
+        .delete()
+        .eq('id', raceId);
+      
+      if (error) throw error;
+      
+      toast.success('Race deleted successfully');
+      onRaceDeleted(raceId);
+      setDetailsOpen(false);
+    } catch (error) {
+      console.error('Error deleting race:', error);
+      toast.error('Failed to delete race');
+    } finally {
+      setDeleteLoading(false);
+    }
   };
   
   return (
@@ -85,13 +133,50 @@ const RaceTable = ({ races, loading }: RaceTableProps) => {
                   </span>
                 </td>
                 <td className="py-2 px-4 text-center">
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    onClick={() => viewRaceDetails(race)}
-                  >
-                    View
-                  </Button>
+                  <div className="flex items-center justify-center gap-2">
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => viewRaceDetails(race)}
+                    >
+                      View
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      onClick={() => handleEditRace(race)}
+                    >
+                      <Edit className="h-4 w-4" />
+                      <span className="sr-only">Edit</span>
+                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                          <span className="sr-only">Delete</span>
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete the race data
+                            and remove it from our servers.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction 
+                            onClick={() => handleDeleteRace(race.id)}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            disabled={deleteLoading}
+                          >
+                            {deleteLoading ? 'Deleting...' : 'Delete'}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -217,9 +302,67 @@ const RaceTable = ({ races, loading }: RaceTableProps) => {
                 </>
               )}
             </div>
+
+            <DialogFooter className="flex justify-between items-center">
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => {
+                    setDetailsOpen(false);
+                    handleEditRace(selectedRace);
+                  }}
+                >
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit
+                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="outline" size="sm" className="text-destructive border-destructive hover:bg-destructive/10">
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Delete
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently delete the race data
+                        and remove it from our servers.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction 
+                        onClick={() => handleDeleteRace(selectedRace.id)}
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        disabled={deleteLoading}
+                      >
+                        {deleteLoading ? 'Deleting...' : 'Delete'}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
+              <Button 
+                variant="default" 
+                onClick={() => setDetailsOpen(false)}
+              >
+                Close
+              </Button>
+            </DialogFooter>
           </DialogContent>
         )}
       </Dialog>
+
+      {selectedRace && (
+        <EditRaceDialog 
+          open={editDialogOpen} 
+          onOpenChange={setEditDialogOpen} 
+          race={selectedRace}
+          onRaceUpdated={onRaceUpdated}
+        />
+      )}
     </>
   );
 };

@@ -22,7 +22,9 @@ const RaceLog = () => {
     filters, 
     setFilters, 
     clearFilters, 
-    handleRaceAdded 
+    handleRaceAdded,
+    handleRaceDeleted,
+    handleRaceUpdated
   } = useRaceData();
 
   // Check if user is authenticated
@@ -65,7 +67,12 @@ const RaceLog = () => {
           {loading ? (
             <p className="text-center py-4">Loading races...</p>
           ) : filteredRaces.length > 0 ? (
-            <RaceTable races={filteredRaces} loading={loading} />
+            <RaceTable 
+              races={filteredRaces} 
+              loading={loading} 
+              onRaceDeleted={handleRaceDeleted}
+              onRaceUpdated={handleRaceUpdated}
+            />
           ) : cars.length > 0 ? (
             <p className="text-muted-foreground text-center py-4">No races match the selected filters.</p>
           ) : (
