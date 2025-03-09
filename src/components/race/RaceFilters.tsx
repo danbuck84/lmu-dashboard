@@ -91,10 +91,11 @@ const RaceFilters: React.FC<RaceFiltersProps> = ({
                 <SelectValue placeholder="All cars" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All cars</SelectItem>
+                <SelectItem value="all">All cars</SelectItem>
                 {Object.entries(carsByClass).map(([carClass, carsInClass]) => (
                   <React.Fragment key={carClass}>
-                    <SelectItem value={`__group_${carClass}`} disabled className="font-semibold bg-muted">
+                    {/* Fix: Change the value to a non-empty string with a special prefix */}
+                    <SelectItem value={`__header_${carClass}`} disabled className="font-semibold bg-muted">
                       {carClass}
                     </SelectItem>
                     {carsInClass.map((car) => (
@@ -118,7 +119,7 @@ const RaceFilters: React.FC<RaceFiltersProps> = ({
                 <SelectValue placeholder="All tracks" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All tracks</SelectItem>
+                <SelectItem value="all">All tracks</SelectItem>
                 {sortedTrackLayouts.map((layout) => (
                   <SelectItem key={layout.id} value={layout.id}>
                     {layout.tracks?.name} ({layout.name})
