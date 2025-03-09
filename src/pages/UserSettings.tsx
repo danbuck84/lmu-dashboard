@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -219,7 +218,7 @@ const UserSettings = () => {
         const [carsResponse, countriesResponse, tracksResponse] = await Promise.all([
           supabase.from('cars').select('*').order('model'),
           supabase.from('countries').select('*').order('name'),
-          supabase.from('tracks').select('*, countries(name)').order('name')
+          supabase.from('tracks').select('*').order('name')
         ]);
         
         if (carsResponse.error) throw carsResponse.error;
@@ -243,29 +242,35 @@ const UserSettings = () => {
   // Fetch user profile
   useEffect(() => {
     const fetchProfile = async () => {
-      if (!user?.isLoggedIn) return;
+      if (!isAuthenticated) return;
       
       try {
         // Get the user's session
         const { data: sessionData } = await supabase.auth.getSession();
         const userUuid = sessionData.session?.user.id;
         
-        if (!userUuid) return;
+        if (!userUuid) {
+          console.error('No user ID found in session');
+          return;
+        }
+        
+        console.log('Fetching profile for user:', userUuid);
         
         const { data, error } = await supabase
           .from('profiles')
-          .select(`
-            *,
-            countries(name),
-            cars(model),
-            tracks(name)
-          `)
+          .select('*')
           .eq('id', userUuid)
           .single();
         
-        if (error && error.code !== 'PGRST116') {
-          throw error;
+        if (error) {
+          if (error.code === 'PGRST116') {
+            console.log('No profile found, this could be normal for new users');
+          } else {
+            throw error;
+          }
         }
+        
+        console.log('Profile data loaded:', data);
         
         if (data) {
           setProfileData(data);
@@ -287,7 +292,7 @@ const UserSettings = () => {
     };
 
     fetchProfile();
-  }, [user, form]);
+  }, [isAuthenticated, form]);
 
   // Submit handler
   const onSubmit = async (values: ProfileFormValues) => {
@@ -303,21 +308,55 @@ const UserSettings = () => {
         return;
       }
 
-      // Update profile in Supabase
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          username: values.username,
-          country_id: values.country || null,
-          city: values.city || null,
-          age: values.age || null,
-          preferred_car_id: values.preferredCar || null,
-          preferred_track_id: values.preferredTrack || null,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', userUuid);
+      console.log('Saving profile data:', {
+        username: values.username,
+        country_id: values.country || null,
+        city: values.city || null,
+        age: values.age || null,
+        preferred_car_id: values.preferredCar || null,
+        preferred_track_id: values.preferredTrack || null,
+      });
 
-      if (error) throw error;
+      // Check if profile exists
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', userUuid)
+        .single();
+
+      let result;
+      
+      if (existingProfile) {
+        // Update existing profile
+        result = await supabase
+          .from('profiles')
+          .update({
+            username: values.username,
+            country_id: values.country || null,
+            city: values.city || null,
+            age: values.age || null,
+            preferred_car_id: values.preferredCar || null,
+            preferred_track_id: values.preferredTrack || null,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', userUuid);
+      } else {
+        // Insert new profile
+        result = await supabase
+          .from('profiles')
+          .insert({
+            id: userUuid,
+            username: values.username,
+            country_id: values.country || null,
+            city: values.city || null,
+            age: values.age || null,
+            preferred_car_id: values.preferredCar || null,
+            preferred_track_id: values.preferredTrack || null,
+            updated_at: new Date().toISOString(),
+          });
+      }
+
+      if (result.error) throw result.error;
       
       toast.success('Profile updated successfully!');
     } catch (error) {

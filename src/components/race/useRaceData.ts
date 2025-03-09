@@ -29,10 +29,16 @@ export function useRaceData() {
           supabase
             .from('races')
             .select(`
-              *,
+              id,
+              race_date,
+              car_id,
               cars(model, class),
-              track_layouts(name, track_id),
-              track_layouts.tracks(name)
+              track_layout_id,
+              track_layouts(name, tracks(name)),
+              start_position,
+              finish_position,
+              driver_rating_change,
+              safety_rating_change
             `)
             .eq('user_id', userId)
             .order('race_date', { ascending: false }),
@@ -52,6 +58,7 @@ export function useRaceData() {
         if (carsResponse.error) throw carsResponse.error;
         if (layoutsResponse.error) throw layoutsResponse.error;
         
+        console.log('Races loaded:', raceResponse.data);
         setRaces(raceResponse.data || []);
         setFilteredRaces(raceResponse.data || []);
         setCars(carsResponse.data || []);
