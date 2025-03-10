@@ -118,6 +118,7 @@ export type Database = {
           qualifying_position: number | null
           race_date: string | null
           safety_rating_change: number | null
+          series: string | null
           start_position: number | null
           track_layout_id: string | null
           user_id: string
@@ -133,6 +134,7 @@ export type Database = {
           qualifying_position?: number | null
           race_date?: string | null
           safety_rating_change?: number | null
+          series?: string | null
           start_position?: number | null
           track_layout_id?: string | null
           user_id: string
@@ -148,6 +150,7 @@ export type Database = {
           qualifying_position?: number | null
           race_date?: string | null
           safety_rating_change?: number | null
+          series?: string | null
           start_position?: number | null
           track_layout_id?: string | null
           user_id?: string
