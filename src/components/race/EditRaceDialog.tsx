@@ -38,6 +38,7 @@ const EditRaceDialog = ({ open, onOpenChange, race, onRaceUpdated }: EditRaceDia
     track_layout_id: race.track_layout_id || '',
     start_position: race.start_position,
     finish_position: race.finish_position,
+    series: race.series || '',
     notes: race.notes || '',
     driver_rating_change: race.driver_rating_change,
     safety_rating_change: race.safety_rating_change,
@@ -70,6 +71,7 @@ const EditRaceDialog = ({ open, onOpenChange, race, onRaceUpdated }: EditRaceDia
           finish_position: values.finish_position,
           driver_rating_change: values.driver_rating_change,
           safety_rating_change: values.safety_rating_change,
+          series: values.series,
           notes: values.notes,
         })
         .eq('id', race.id)
@@ -84,6 +86,7 @@ const EditRaceDialog = ({ open, onOpenChange, race, onRaceUpdated }: EditRaceDia
           finish_position,
           driver_rating_change,
           safety_rating_change,
+          series,
           notes
         `)
         .single();

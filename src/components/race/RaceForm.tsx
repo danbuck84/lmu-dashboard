@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { RaceFormValues, RaceFormInputValues, raceFormSchema } from "./race-form-schema";
-import { DateField, CarField, TrackField, PositionFields, RatingFields, NotesField } from "./FormFields";
+import { DateField, CarField, TrackField, PositionFields, RatingFields, SeriesField, NotesField } from "./FormFields";
 
 type Car = {
   id: string;
@@ -38,6 +38,7 @@ const RaceForm = ({ onSubmit, cars, trackLayouts, loading, defaultValues }: Race
       track_layout_id: defaultValues?.track_layout_id || "",
       start_position: defaultValues?.start_position || 0,
       finish_position: defaultValues?.finish_position || 0,
+      series: defaultValues?.series || "",
       notes: defaultValues?.notes || "",
       driver_rating_change: defaultValues?.driver_rating_change !== undefined 
         ? defaultValues.driver_rating_change.toString() 
@@ -98,6 +99,7 @@ const RaceForm = ({ onSubmit, cars, trackLayouts, loading, defaultValues }: Race
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <PositionFields control={form.control} />
+          <SeriesField control={form.control} />
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

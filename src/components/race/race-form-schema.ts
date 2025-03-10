@@ -7,6 +7,7 @@ export const raceFormSchema = z.object({
   track_layout_id: z.string().min(1, { message: "Track and layout are required" }),
   start_position: z.coerce.number().int().min(1, { message: "Start position is required" }),
   finish_position: z.coerce.number().int().min(1, { message: "Finish position is required" }),
+  series: z.string().optional(),
   notes: z.string().optional(),
   driver_rating_change: z.string()
     .refine(val => /^-?\d+(\.\d+)?$/.test(val), {

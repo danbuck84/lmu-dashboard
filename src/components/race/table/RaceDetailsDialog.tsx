@@ -1,28 +1,15 @@
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Edit, Trash2 } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { 
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Edit, Trash2, Trophy, FileText } from 'lucide-react';
 import type { Race } from './types';
 
 type RaceDetailsDialogProps = {
@@ -40,7 +27,7 @@ const RaceDetailsDialog = ({
   onOpenChange,
   onEditRace,
   onDeleteRace,
-  deleteLoading
+  deleteLoading,
 }: RaceDetailsDialogProps) => {
   if (!race) return null;
 
@@ -48,137 +35,74 @@ const RaceDetailsDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold">Race Details</DialogTitle>
-          <DialogDescription>
-            {new Date(race.race_date).toLocaleDateString('en-US', { 
-              weekday: 'long', 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
-            })}
-          </DialogDescription>
+          <DialogTitle>Race Details</DialogTitle>
         </DialogHeader>
-        
-        <div className="space-y-4 py-4">
-          <div className="space-y-1">
-            <div className="flex justify-between items-center">
-              <h3 className="font-medium">Car</h3>
-              <span className="text-muted-foreground">{race.cars?.model}</span>
-            </div>
-            {race.cars?.class && (
-              <div className="flex justify-between items-center">
-                <h3 className="font-medium">Class</h3>
-                <Badge variant="outline">{race.cars.class}</Badge>
-              </div>
-            )}
+
+        <div className="grid gap-4 py-4">
+          <div className="grid grid-cols-3 items-center gap-4">
+            <span className="font-semibold">Date:</span>
+            <span className="col-span-2">{new Date(race.race_date).toLocaleDateString()}</span>
           </div>
           
-          <Separator />
-          
-          <div className="space-y-1">
-            <div className="flex justify-between items-center">
-              <h3 className="font-medium">Track</h3>
-              <span className="text-muted-foreground">{race.track_layouts?.tracks?.name}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <h3 className="font-medium">Layout</h3>
-              <span className="text-muted-foreground">{race.track_layouts?.name}</span>
-            </div>
+          <div className="grid grid-cols-3 items-center gap-4">
+            <span className="font-semibold">Car:</span>
+            <span className="col-span-2">{race.cars?.model}</span>
           </div>
           
-          <Separator />
-          
-          <div className="space-y-1">
-            <h3 className="font-medium">Race Results</h3>
-            <div className="grid grid-cols-2 gap-4 pt-2">
-              {race.qualifying_position !== undefined && (
-                <div>
-                  <span className="text-sm text-muted-foreground">Qualifying</span>
-                  <p className="font-medium text-lg">P{race.qualifying_position}</p>
-                </div>
-              )}
-              <div>
-                <span className="text-sm text-muted-foreground">Start</span>
-                <p className="font-medium text-lg">P{race.start_position}</p>
-              </div>
-              <div>
-                <span className="text-sm text-muted-foreground">Finish</span>
-                <p className="font-medium text-lg">P{race.finish_position}</p>
-              </div>
-              {race.incidents !== undefined && (
-                <div>
-                  <span className="text-sm text-muted-foreground">Incidents</span>
-                  <p className="font-medium text-lg">{race.incidents}</p>
-                </div>
-              )}
+          {race.series && (
+            <div className="grid grid-cols-3 items-center gap-4">
+              <span className="font-semibold flex items-center gap-1">
+                <Trophy className="h-4 w-4" />
+                Series:
+              </span>
+              <span className="col-span-2">{race.series}</span>
             </div>
+          )}
+          
+          <div className="grid grid-cols-3 items-center gap-4">
+            <span className="font-semibold">Track:</span>
+            <span className="col-span-2">{race.track_layouts?.tracks?.name} ({race.track_layouts?.name})</span>
           </div>
           
-          <Separator />
+          <div className="grid grid-cols-3 items-center gap-4">
+            <span className="font-semibold">Positions:</span>
+            <span className="col-span-2">Start: {race.start_position} → Finish: {race.finish_position}</span>
+          </div>
           
-          <div className="space-y-1">
-            <h3 className="font-medium">Rating Changes</h3>
-            <div className="grid grid-cols-2 gap-4 pt-2">
+          <div className="grid grid-cols-3 items-center gap-4">
+            <span className="font-semibold">Rating Changes:</span>
+            <div className="col-span-2">
               <div>
-                <span className="text-sm text-muted-foreground">Driver Rating</span>
-                <p className={`font-medium text-lg ${
-                  race.driver_rating_change > 0 
-                    ? 'text-green-500' 
-                    : race.driver_rating_change < 0 
-                    ? 'text-red-500' 
-                    : ''
-                }`}>
-                  {race.driver_rating_change > 0 
-                    ? `+${Number(race.driver_rating_change).toFixed(2)}` 
-                    : Number(race.driver_rating_change).toFixed(2)
-                  }
-                </p>
+                DR: 
+                <span className={race.driver_rating_change > 0 ? 'text-green-500 ml-1' : race.driver_rating_change < 0 ? 'text-red-500 ml-1' : 'ml-1'}>
+                  {race.driver_rating_change > 0 ? `+${Number(race.driver_rating_change).toFixed(2)}` : Number(race.driver_rating_change).toFixed(2)}
+                </span>
               </div>
               <div>
-                <span className="text-sm text-muted-foreground">Safety Rating</span>
-                <p className={`font-medium text-lg ${
-                  race.safety_rating_change > 0 
-                    ? 'text-green-500' 
-                    : race.safety_rating_change < 0 
-                    ? 'text-red-500' 
-                    : ''
-                }`}>
-                  {race.safety_rating_change > 0 
-                    ? `+${Number(race.safety_rating_change).toFixed(2)}` 
-                    : Number(race.safety_rating_change).toFixed(2)
-                  }
-                </p>
+                SR: 
+                <span className={race.safety_rating_change > 0 ? 'text-green-500 ml-1' : race.safety_rating_change < 0 ? 'text-red-500 ml-1' : 'ml-1'}>
+                  {race.safety_rating_change > 0 ? `+${Number(race.safety_rating_change).toFixed(2)}` : Number(race.safety_rating_change).toFixed(2)}
+                </span>
               </div>
             </div>
           </div>
           
           {race.notes && (
-            <>
-              <Separator />
-              <div className="space-y-1">
-                <h3 className="font-medium">Notes</h3>
-                <p className="text-sm text-muted-foreground whitespace-pre-wrap">{race.notes}</p>
-              </div>
-            </>
+            <div className="grid grid-cols-3 items-start gap-4">
+              <span className="font-semibold flex items-center gap-1">
+                <FileText className="h-4 w-4" />
+                Notes:
+              </span>
+              <div className="col-span-2 whitespace-pre-wrap">{race.notes}</div>
+            </div>
           )}
         </div>
 
-        <DialogFooter className="flex justify-between items-center">
-          <div className="flex gap-2">
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => {
-                onOpenChange(false);
-                onEditRace(race);
-              }}
-            >
-              <Edit className="h-4 w-4 mr-2" />
-              Edit
-            </Button>
+        <DialogFooter>
+          <div className="flex w-full justify-between">
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="outline" size="sm" className="text-destructive border-destructive hover:bg-destructive/10">
+                <Button variant="destructive" size="sm">
                   <Trash2 className="h-4 w-4 mr-2" />
                   Delete
                 </Button>
@@ -203,13 +127,17 @@ const RaceDetailsDialog = ({
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
+            
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => onOpenChange(false)}>
+                Close
+              </Button>
+              <Button onClick={() => onEditRace(race)}>
+                <Edit className="h-4 w-4 mr-2" />
+                Edit
+              </Button>
+            </div>
           </div>
-          <Button 
-            variant="default" 
-            onClick={() => onOpenChange(false)}
-          >
-            Close
-          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

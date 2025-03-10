@@ -68,6 +68,7 @@ const RaceTable = ({ races, loading, onRaceDeleted, onRaceUpdated }: RaceTablePr
               <th className="py-2 px-4 text-left">Date</th>
               <th className="py-2 px-4 text-left">Car</th>
               <th className="py-2 px-4 text-left">Track</th>
+              <th className="py-2 px-4 text-left">Series</th>
               <th className="py-2 px-4 text-center">Start</th>
               <th className="py-2 px-4 text-center">Finish</th>
               <th className="py-2 px-4 text-center">DR Change</th>
@@ -81,9 +82,6 @@ const RaceTable = ({ races, loading, onRaceDeleted, onRaceUpdated }: RaceTablePr
                 key={race.id}
                 race={race}
                 onViewDetails={viewRaceDetails}
-                onEditRace={handleEditRace}
-                onDeleteRace={handleDeleteRace}
-                deleteLoading={deleteLoading}
               />
             ))}
           </tbody>

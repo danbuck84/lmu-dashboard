@@ -53,6 +53,7 @@ const AddRaceDialog = ({ onRaceAdded }: AddRaceDialogProps) => {
           finish_position: values.finish_position,
           driver_rating_change: values.driver_rating_change,
           safety_rating_change: values.safety_rating_change,
+          series: values.series,
           notes: values.notes,
         })
         .select(`
@@ -66,6 +67,7 @@ const AddRaceDialog = ({ onRaceAdded }: AddRaceDialogProps) => {
           finish_position,
           driver_rating_change,
           safety_rating_change,
+          series,
           notes
         `)
         .single();

@@ -39,9 +39,8 @@ export function useRaceData() {
               finish_position,
               driver_rating_change,
               safety_rating_change,
-              incidents,
-              notes,
-              qualifying_position
+              series,
+              notes
             `)
             .eq('user_id', userId)
             .order('race_date', { ascending: false }),

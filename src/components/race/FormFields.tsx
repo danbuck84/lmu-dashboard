@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { RaceFormInputValues } from "./race-form-schema";
-import { FileText } from "lucide-react";
+import { FileText, Trophy } from "lucide-react";
 
 type Car = {
   id: string;
@@ -136,6 +136,25 @@ export const PositionFields = ({ control }: { control: Control<RaceFormInputValu
       )}
     />
   </>
+);
+
+export const SeriesField = ({ control }: { control: Control<RaceFormInputValues> }) => (
+  <FormField
+    control={control}
+    name="series"
+    render={({ field }) => (
+      <FormItem>
+        <FormLabel className="flex items-center gap-1">
+          <Trophy className="h-4 w-4" />
+          Series
+        </FormLabel>
+        <FormControl>
+          <Input placeholder="e.g. GT3 Challenge, Endurance Series" {...field} value={field.value || ''} />
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+    )}
+  />
 );
 
 export const RatingFields = ({ control }: { control: Control<RaceFormInputValues> }) => (

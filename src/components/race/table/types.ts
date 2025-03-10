@@ -11,9 +11,8 @@ export type Race = {
   finish_position: number;
   driver_rating_change: number;
   safety_rating_change: number;
-  incidents?: number;
+  series?: string;
   notes?: string;
-  qualifying_position?: number;
   car_id?: string;
   track_layout_id?: string;
 };
