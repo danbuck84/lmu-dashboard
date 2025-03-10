@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { RaceFormValues, RaceFormInputValues, raceFormSchema } from "./race-form-schema";
-import { DateField, CarField, TrackField, PositionFields, RatingFields, AdditionalFields } from "./FormFields";
+import { DateField, CarField, TrackField, PositionFields, RatingFields, NotesField } from "./FormFields";
 
 type Car = {
   id: string;
@@ -38,8 +38,6 @@ const RaceForm = ({ onSubmit, cars, trackLayouts, loading, defaultValues }: Race
       track_layout_id: defaultValues?.track_layout_id || "",
       start_position: defaultValues?.start_position || 0,
       finish_position: defaultValues?.finish_position || 0,
-      qualifying_position: defaultValues?.qualifying_position,
-      incidents: defaultValues?.incidents,
       notes: defaultValues?.notes || "",
       driver_rating_change: defaultValues?.driver_rating_change !== undefined 
         ? defaultValues.driver_rating_change.toString() 
@@ -84,7 +82,13 @@ const RaceForm = ({ onSubmit, cars, trackLayouts, loading, defaultValues }: Race
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-4" ref={(formElement) => {
+        // This will expose the form element to the parent component
+        if (formElement && typeof window !== 'undefined') {
+          // @ts-ignore - This is a hack to expose the form to the parent
+          window.raceFormElement = formElement;
+        }
+      }}>
         <DateField control={form.control} />
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -92,7 +96,7 @@ const RaceForm = ({ onSubmit, cars, trackLayouts, loading, defaultValues }: Race
           <TrackField control={form.control} sortedTrackLayouts={sortedTrackLayouts} />
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <PositionFields control={form.control} />
         </div>
         
@@ -100,11 +104,10 @@ const RaceForm = ({ onSubmit, cars, trackLayouts, loading, defaultValues }: Race
           <RatingFields control={form.control} />
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <AdditionalFields control={form.control} />
+        <div className="grid grid-cols-1 gap-4">
+          <NotesField control={form.control} />
         </div>
         
-        {/* This is a hidden submit button that will be triggered when the form is submitted */}
         <Button type="submit" className="hidden">Submit</Button>
       </form>
     </Form>

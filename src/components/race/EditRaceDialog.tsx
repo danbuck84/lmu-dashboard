@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -25,9 +25,11 @@ type EditRaceDialogProps = {
 
 const EditRaceDialog = ({ open, onOpenChange, race, onRaceUpdated }: EditRaceDialogProps) => {
   const { cars, trackLayouts, loading, setLoading } = useRaceFormData(open);
-  const [formRef, setFormRef] = useState<HTMLFormElement | null>(null);
   
-  const formattedDate = race.race_date ? new Date(race.race_date).toISOString().split('T')[0] : '';
+  // Format the date with timezone adjustment to prevent off-by-one day errors
+  const formattedDate = race.race_date 
+    ? new Date(race.race_date).toLocaleDateString('en-CA') // YYYY-MM-DD format
+    : '';
 
   // Format default values for the form
   const defaultValues = {
@@ -36,8 +38,6 @@ const EditRaceDialog = ({ open, onOpenChange, race, onRaceUpdated }: EditRaceDia
     track_layout_id: race.track_layout_id || '',
     start_position: race.start_position,
     finish_position: race.finish_position,
-    qualifying_position: race.qualifying_position,
-    incidents: race.incidents,
     notes: race.notes || '',
     driver_rating_change: race.driver_rating_change,
     safety_rating_change: race.safety_rating_change,
@@ -56,19 +56,20 @@ const EditRaceDialog = ({ open, onOpenChange, race, onRaceUpdated }: EditRaceDia
         return;
       }
       
+      // Use the input date and preserve the time component
+      const dateValue = new Date(values.date);
+      
       // Update race in database
       const { data, error } = await supabase
         .from('races')
         .update({
-          race_date: new Date(values.date).toISOString(),
+          race_date: dateValue.toISOString(),
           car_id: values.car_id,
           track_layout_id: values.track_layout_id,
           start_position: values.start_position,
           finish_position: values.finish_position,
-          qualifying_position: values.qualifying_position,
           driver_rating_change: values.driver_rating_change,
           safety_rating_change: values.safety_rating_change,
-          incidents: values.incidents,
           notes: values.notes,
         })
         .eq('id', race.id)
@@ -81,10 +82,8 @@ const EditRaceDialog = ({ open, onOpenChange, race, onRaceUpdated }: EditRaceDia
           track_layouts(name, tracks(name)),
           start_position,
           finish_position,
-          qualifying_position,
           driver_rating_change,
           safety_rating_change,
-          incidents,
           notes
         `)
         .single();
@@ -107,8 +106,8 @@ const EditRaceDialog = ({ open, onOpenChange, race, onRaceUpdated }: EditRaceDia
 
   // Function to submit the form programmatically
   const handleSaveClick = () => {
-    if (formRef) {
-      formRef.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+    if (typeof window !== 'undefined' && window.raceFormElement) {
+      window.raceFormElement.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
     }
   };
 
@@ -130,7 +129,7 @@ const EditRaceDialog = ({ open, onOpenChange, race, onRaceUpdated }: EditRaceDia
           defaultValues={defaultValues}
         />
         
-        <DialogFooter className="flex flex-col sm:flex-row justify-end gap-2 pt-4">
+        <DialogFooter className="flex flex-row justify-end gap-2 pt-4">
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>

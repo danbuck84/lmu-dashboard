@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { RaceFormInputValues } from "./race-form-schema";
-import { AlertTriangle, FileText, Flag } from "lucide-react";
+import { FileText } from "lucide-react";
 
 type Car = {
   id: string;
@@ -110,23 +110,6 @@ export const PositionFields = ({ control }: { control: Control<RaceFormInputValu
   <>
     <FormField
       control={control}
-      name="qualifying_position"
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel className="flex items-center gap-1">
-            <Flag className="h-4 w-4" />
-            Qualifying Position
-          </FormLabel>
-          <FormControl>
-            <Input type="number" placeholder="Optional" {...field} value={field.value || ''} />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
-    
-    <FormField
-      control={control}
       name="start_position"
       render={({ field }) => (
         <FormItem>
@@ -193,40 +176,21 @@ export const RatingFields = ({ control }: { control: Control<RaceFormInputValues
   </>
 );
 
-export const AdditionalFields = ({ control }: { control: Control<RaceFormInputValues> }) => (
-  <>
-    <FormField
-      control={control}
-      name="incidents"
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel className="flex items-center gap-1">
-            <AlertTriangle className="h-4 w-4" />
-            Incidents
-          </FormLabel>
-          <FormControl>
-            <Input type="number" placeholder="Optional" {...field} value={field.value || ''} />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
-    
-    <FormField
-      control={control}
-      name="notes"
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel className="flex items-center gap-1">
-            <FileText className="h-4 w-4" />
-            Notes
-          </FormLabel>
-          <FormControl>
-            <Textarea placeholder="Optional notes about the race" {...field} value={field.value || ''} />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
-  </>
+export const NotesField = ({ control }: { control: Control<RaceFormInputValues> }) => (
+  <FormField
+    control={control}
+    name="notes"
+    render={({ field }) => (
+      <FormItem>
+        <FormLabel className="flex items-center gap-1">
+          <FileText className="h-4 w-4" />
+          Notes
+        </FormLabel>
+        <FormControl>
+          <Textarea placeholder="Optional notes about the race" {...field} value={field.value || ''} />
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+    )}
+  />
 );
