@@ -43,6 +43,7 @@ type EditRaceDialogProps = {
 
 const EditRaceDialog = ({ open, onOpenChange, race, onRaceUpdated }: EditRaceDialogProps) => {
   const { cars, trackLayouts, loading, setLoading } = useRaceFormData(open);
+  const [formRef, setFormRef] = useState<HTMLFormElement | null>(null);
   
   const formattedDate = race.race_date ? new Date(race.race_date).toISOString().split('T')[0] : '';
 
@@ -106,7 +107,7 @@ const EditRaceDialog = ({ open, onOpenChange, race, onRaceUpdated }: EditRaceDia
       }
       
       toast.success('Race updated successfully!');
-      onRaceUpdated(data);
+      onRaceUpdated(data as Race);
       onOpenChange(false);
     } catch (error) {
       console.error("Error updating race:", error);
@@ -115,6 +116,13 @@ const EditRaceDialog = ({ open, onOpenChange, race, onRaceUpdated }: EditRaceDia
       setLoading(false);
     }
   }
+
+  // Function to submit the form programmatically
+  const handleSaveClick = () => {
+    if (formRef) {
+      formRef.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -134,9 +142,16 @@ const EditRaceDialog = ({ open, onOpenChange, race, onRaceUpdated }: EditRaceDia
           defaultValues={defaultValues}
         />
         
-        <DialogFooter>
+        <DialogFooter className="flex justify-end gap-2 pt-4">
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
+          </Button>
+          <Button 
+            type="button" 
+            onClick={handleSaveClick}
+            disabled={loading}
+          >
+            {loading ? "Saving..." : "Save Changes"}
           </Button>
         </DialogFooter>
       </DialogContent>

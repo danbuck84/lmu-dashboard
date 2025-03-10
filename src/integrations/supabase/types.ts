@@ -113,6 +113,9 @@ export type Database = {
           driver_rating_change: number | null
           finish_position: number | null
           id: string
+          incidents: number | null
+          notes: string | null
+          qualifying_position: number | null
           race_date: string | null
           safety_rating_change: number | null
           start_position: number | null
@@ -125,6 +128,9 @@ export type Database = {
           driver_rating_change?: number | null
           finish_position?: number | null
           id?: string
+          incidents?: number | null
+          notes?: string | null
+          qualifying_position?: number | null
           race_date?: string | null
           safety_rating_change?: number | null
           start_position?: number | null
@@ -137,6 +143,9 @@ export type Database = {
           driver_rating_change?: number | null
           finish_position?: number | null
           id?: string
+          incidents?: number | null
+          notes?: string | null
+          qualifying_position?: number | null
           race_date?: string | null
           safety_rating_change?: number | null
           start_position?: number | null

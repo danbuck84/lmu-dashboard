@@ -24,6 +24,7 @@ type AddRaceDialogProps = {
 const AddRaceDialog = ({ onRaceAdded }: AddRaceDialogProps) => {
   const [open, setOpen] = useState(false);
   const { cars, trackLayouts, loading, setLoading } = useRaceFormData(open);
+  const [formRef, setFormRef] = useState<HTMLFormElement | null>(null);
 
   async function onSubmit(values: RaceFormValues) {
     try {
@@ -72,7 +73,10 @@ const AddRaceDialog = ({ onRaceAdded }: AddRaceDialogProps) => {
           start_position,
           finish_position,
           driver_rating_change,
-          safety_rating_change
+          safety_rating_change,
+          incidents,
+          notes,
+          qualifying_position
         `)
         .single();
         
@@ -91,6 +95,13 @@ const AddRaceDialog = ({ onRaceAdded }: AddRaceDialogProps) => {
       setLoading(false);
     }
   }
+
+  // Function to submit the form programmatically
+  const handleSaveClick = () => {
+    if (formRef) {
+      formRef.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -115,9 +126,16 @@ const AddRaceDialog = ({ onRaceAdded }: AddRaceDialogProps) => {
           loading={loading}
         />
         
-        <DialogFooter>
+        <DialogFooter className="flex justify-end gap-2 pt-4">
           <Button type="button" variant="outline" onClick={() => setOpen(false)}>
             Cancel
+          </Button>
+          <Button 
+            type="button" 
+            onClick={handleSaveClick}
+            disabled={loading}
+          >
+            {loading ? "Saving..." : "Save Race"}
           </Button>
         </DialogFooter>
       </DialogContent>

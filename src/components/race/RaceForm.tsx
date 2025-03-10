@@ -97,11 +97,8 @@ const RaceForm = ({ onSubmit, cars, trackLayouts, loading, defaultValues }: Race
           <RatingFields control={form.control} />
         </div>
         
-        <div className="flex justify-end space-x-2">
-          <Button type="submit" disabled={loading}>
-            {loading ? "Saving..." : "Save Race"}
-          </Button>
-        </div>
+        {/* This is a hidden submit button that will be triggered when the form is submitted */}
+        <Button type="submit" className="hidden">Submit</Button>
       </form>
     </Form>
   );
