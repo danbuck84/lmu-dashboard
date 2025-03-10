@@ -14,25 +14,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useRaceFormData } from './useRaceFormData';
 import RaceForm from './RaceForm';
 import type { RaceFormValues } from './race-form-schema';
-
-type Race = {
-  id: string;
-  race_date: string;
-  cars?: { model: string; class?: string };
-  track_layouts?: { 
-    name: string;
-    tracks?: { name: string };
-  };
-  start_position: number;
-  finish_position: number;
-  driver_rating_change: number;
-  safety_rating_change: number;
-  incidents?: number;
-  notes?: string;
-  qualifying_position?: number;
-  car_id?: string;
-  track_layout_id?: string;
-};
+import type { Race } from './table/types';
 
 type EditRaceDialogProps = {
   open: boolean;
@@ -54,6 +36,9 @@ const EditRaceDialog = ({ open, onOpenChange, race, onRaceUpdated }: EditRaceDia
     track_layout_id: race.track_layout_id || '',
     start_position: race.start_position,
     finish_position: race.finish_position,
+    qualifying_position: race.qualifying_position,
+    incidents: race.incidents,
+    notes: race.notes || '',
     driver_rating_change: race.driver_rating_change,
     safety_rating_change: race.safety_rating_change,
   };
@@ -80,8 +65,11 @@ const EditRaceDialog = ({ open, onOpenChange, race, onRaceUpdated }: EditRaceDia
           track_layout_id: values.track_layout_id,
           start_position: values.start_position,
           finish_position: values.finish_position,
+          qualifying_position: values.qualifying_position,
           driver_rating_change: values.driver_rating_change,
           safety_rating_change: values.safety_rating_change,
+          incidents: values.incidents,
+          notes: values.notes,
         })
         .eq('id', race.id)
         .select(`
@@ -93,11 +81,11 @@ const EditRaceDialog = ({ open, onOpenChange, race, onRaceUpdated }: EditRaceDia
           track_layouts(name, tracks(name)),
           start_position,
           finish_position,
+          qualifying_position,
           driver_rating_change,
           safety_rating_change,
           incidents,
-          notes,
-          qualifying_position
+          notes
         `)
         .single();
         
@@ -142,7 +130,7 @@ const EditRaceDialog = ({ open, onOpenChange, race, onRaceUpdated }: EditRaceDia
           defaultValues={defaultValues}
         />
         
-        <DialogFooter className="flex justify-end gap-2 pt-4">
+        <DialogFooter className="flex flex-col sm:flex-row justify-end gap-2 pt-4">
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>

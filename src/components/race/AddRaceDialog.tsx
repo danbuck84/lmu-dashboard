@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -46,8 +46,11 @@ const AddRaceDialog = ({ onRaceAdded }: AddRaceDialogProps) => {
         track_layout_id: values.track_layout_id,
         start_position: values.start_position,
         finish_position: values.finish_position,
+        qualifying_position: values.qualifying_position,
         driver_rating_change: values.driver_rating_change,
         safety_rating_change: values.safety_rating_change,
+        incidents: values.incidents,
+        notes: values.notes,
       });
       
       // Insert race into database
@@ -60,8 +63,11 @@ const AddRaceDialog = ({ onRaceAdded }: AddRaceDialogProps) => {
           track_layout_id: values.track_layout_id,
           start_position: values.start_position,
           finish_position: values.finish_position,
+          qualifying_position: values.qualifying_position,
           driver_rating_change: values.driver_rating_change,
           safety_rating_change: values.safety_rating_change,
+          incidents: values.incidents,
+          notes: values.notes,
         })
         .select(`
           id,
@@ -72,11 +78,11 @@ const AddRaceDialog = ({ onRaceAdded }: AddRaceDialogProps) => {
           track_layouts(name, tracks(name)),
           start_position,
           finish_position,
+          qualifying_position,
           driver_rating_change,
           safety_rating_change,
           incidents,
-          notes,
-          qualifying_position
+          notes
         `)
         .single();
         
@@ -126,7 +132,7 @@ const AddRaceDialog = ({ onRaceAdded }: AddRaceDialogProps) => {
           loading={loading}
         />
         
-        <DialogFooter className="flex justify-end gap-2 pt-4">
+        <DialogFooter className="flex flex-col sm:flex-row justify-end gap-2 pt-4">
           <Button type="button" variant="outline" onClick={() => setOpen(false)}>
             Cancel
           </Button>
