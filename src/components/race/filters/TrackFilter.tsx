@@ -27,12 +27,21 @@ const TrackFilter: React.FC<TrackFilterProps> = ({ trackLayouts, filters, setFil
     return a.name.localeCompare(b.name);
   });
 
+  const handleTrackChange = (value: string) => {
+    if (value === 'all') {
+      // When selecting "All tracks", set trackLayoutId to undefined
+      setFilters({ ...filters, trackLayoutId: undefined });
+    } else {
+      setFilters({ ...filters, trackLayoutId: value });
+    }
+  };
+
   return (
     <div className="w-full md:w-auto flex-1 min-w-[180px]">
       <p className="text-sm font-medium mb-2">Track</p>
       <Select
-        value={filters.trackLayoutId || ''}
-        onValueChange={(value) => setFilters({ ...filters, trackLayoutId: value || undefined })}
+        value={filters.trackLayoutId || 'all'}
+        onValueChange={handleTrackChange}
       >
         <SelectTrigger>
           <SelectValue placeholder="All tracks" />

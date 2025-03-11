@@ -15,4 +15,18 @@ export type Race = {
   notes?: string;
   car_id?: string;
   track_layout_id?: string;
+  race_number?: number; // Added for display purposes only
 };
+
+export type SortField = 
+  | 'race_number'
+  | 'race_date'
+  | 'car'
+  | 'track'
+  | 'series'
+  | 'start_position'
+  | 'finish_position'
+  | 'driver_rating_change'
+  | 'safety_rating_change';
+
+export type SortDirection = 'asc' | 'desc';

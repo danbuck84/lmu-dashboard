@@ -14,6 +14,7 @@ const RaceTableRow = ({
 }: RaceTableRowProps) => {
   return (
     <tr className="border-b hover:bg-muted/50">
+      <td className="py-2 px-4 text-center">{race.race_number}</td>
       <td className="py-2 px-4">{new Date(race.race_date).toLocaleDateString()}</td>
       <td className="py-2 px-4">{race.cars?.model}</td>
       <td className="py-2 px-4">{race.track_layouts?.tracks?.name} ({race.track_layouts?.name})</td>
