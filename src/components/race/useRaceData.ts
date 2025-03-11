@@ -3,10 +3,11 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import type { FilterOptions } from './filters/types';
+import type { Race } from './table/types';
 
 export function useRaceData() {
-  const [races, setRaces] = useState<any[]>([]);
-  const [filteredRaces, setFilteredRaces] = useState<any[]>([]);
+  const [races, setRaces] = useState<Race[]>([]);
+  const [filteredRaces, setFilteredRaces] = useState<Race[]>([]);
   const [loading, setLoading] = useState(true);
   const [cars, setCars] = useState<any[]>([]);
   const [trackLayouts, setTrackLayouts] = useState<any[]>([]);
@@ -61,8 +62,15 @@ export function useRaceData() {
         if (layoutsResponse.error) throw layoutsResponse.error;
         
         console.log('Races loaded:', raceResponse.data);
-        setRaces(raceResponse.data || []);
-        setFilteredRaces(raceResponse.data || []);
+        
+        // Add race_number property to each race (for display purposes)
+        const racesWithNumbers = raceResponse.data?.map((race, index) => ({
+          ...race,
+          race_number: raceResponse.data.length - index
+        })) || [];
+        
+        setRaces(racesWithNumbers);
+        setFilteredRaces(racesWithNumbers);
         setCars(carsResponse.data || []);
         setTrackLayouts(layoutsResponse.data || []);
       } catch (error) {
@@ -129,7 +137,14 @@ export function useRaceData() {
   };
 
   const handleRaceAdded = (newRace: any) => {
-    setRaces(prevRaces => [newRace, ...prevRaces]);
+    setRaces(prevRaces => {
+      // Add race_number property to the new race
+      const raceWithNumber = {
+        ...newRace,
+        race_number: prevRaces.length > 0 ? Math.max(...prevRaces.map(r => r.race_number || 0)) + 1 : 1
+      };
+      return [raceWithNumber, ...prevRaces];
+    });
   };
 
   const handleRaceDeleted = (raceId: string) => {
@@ -138,7 +153,10 @@ export function useRaceData() {
 
   const handleRaceUpdated = (updatedRace: any) => {
     setRaces(prevRaces => 
-      prevRaces.map(race => race.id === updatedRace.id ? updatedRace : race)
+      prevRaces.map(race => race.id === updatedRace.id ? {
+        ...updatedRace,
+        race_number: race.race_number // Preserve the race number
+      } : race)
     );
   };
 
