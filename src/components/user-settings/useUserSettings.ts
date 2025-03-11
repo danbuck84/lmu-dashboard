@@ -8,12 +8,23 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { formSchema, ProfileFormValues } from './types';
 
+interface Country {
+  name: {
+    common: string;
+  };
+  cca2: string;
+  flags: {
+    svg: string;
+    png: string;
+  };
+}
+
 export const useUserSettings = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [cars, setCars] = useState<any[]>([]);
-  const [countries, setCountries] = useState<any[]>([]);
+  const [countries, setCountries] = useState<Country[]>([]);
   const [tracks, setTracks] = useState<any[]>([]);
   const [profileData, setProfileData] = useState<any>(null);
   
@@ -38,23 +49,41 @@ export const useUserSettings = () => {
     }
   }, [isAuthenticated, navigate]);
 
-  // Fetch reference data (cars, countries, tracks)
+  // Fetch countries from REST Countries API
   useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        const response = await fetch('https://restcountries.com/v3.1/all?fields=name,cca2,flags');
+        if (!response.ok) {
+          throw new Error('Failed to fetch countries');
+        }
+        const data: Country[] = await response.json();
+        
+        // Sort countries alphabetically by name
+        const sortedCountries = data.sort((a, b) => 
+          a.name.common.localeCompare(b.name.common)
+        );
+        
+        setCountries(sortedCountries);
+      } catch (error) {
+        console.error('Error fetching countries:', error);
+        toast.error('Failed to load countries data');
+      }
+    };
+
+    // Fetch cars and tracks from Supabase
     const fetchReferenceData = async () => {
       try {
-        // Fetch all data in parallel
-        const [carsResponse, countriesResponse, tracksResponse] = await Promise.all([
+        // Fetch car and track data in parallel
+        const [carsResponse, tracksResponse] = await Promise.all([
           supabase.from('cars').select('*').order('model'),
-          supabase.from('countries').select('*').order('name'),
           supabase.from('tracks').select('*').order('name')
         ]);
         
         if (carsResponse.error) throw carsResponse.error;
-        if (countriesResponse.error) throw countriesResponse.error;
         if (tracksResponse.error) throw tracksResponse.error;
         
         setCars(carsResponse.data || []);
-        setCountries(countriesResponse.data || []);
         setTracks(tracksResponse.data || []);
       } catch (error) {
         console.error('Error fetching reference data:', error);
@@ -63,6 +92,7 @@ export const useUserSettings = () => {
     };
 
     if (isAuthenticated) {
+      fetchCountries();
       fetchReferenceData();
     }
   }, [isAuthenticated]);
