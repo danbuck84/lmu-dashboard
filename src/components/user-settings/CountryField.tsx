@@ -16,17 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Control } from "react-hook-form";
 import { ProfileFormValues } from './types';
-
-interface Country {
-  name: {
-    common: string;
-  };
-  cca2: string;
-  flags: {
-    svg: string;
-    png: string;
-  };
-}
+import { Country } from './hooks/useCountryData';
 
 interface CountryFieldProps {
   control: Control<ProfileFormValues>;
