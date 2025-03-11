@@ -151,3 +151,21 @@
 .glass-dark {
   @apply backdrop-blur-md bg-black/40 border border-white/10;
 }
+
+/* Checkered flag pattern - Light Mode */
+.checkered-flag-light {
+  @apply bg-checkered-pattern bg-checkered-pattern bg-[length:20px_20px];
+  background-image: linear-gradient(45deg, rgba(0, 0, 0, 0.05) 25%, transparent 25%), 
+                   linear-gradient(-45deg, rgba(0, 0, 0, 0.05) 25%, transparent 25%), 
+                   linear-gradient(45deg, transparent 75%, rgba(0, 0, 0, 0.05) 75%), 
+                   linear-gradient(-45deg, transparent 75%, rgba(0, 0, 0, 0.05) 75%);
+}
+
+/* Checkered flag pattern - Dark Mode */
+.dark .checkered-flag-dark {
+  @apply bg-checkered-pattern bg-checkered-pattern bg-[length:20px_20px];
+  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%), 
+                   linear-gradient(-45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%), 
+                   linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.1) 75%), 
+                   linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.1) 75%);
+}
