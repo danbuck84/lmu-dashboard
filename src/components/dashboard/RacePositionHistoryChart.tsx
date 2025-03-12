@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import ChartCard from './ChartCard';
@@ -25,10 +26,13 @@ const RacePositionHistoryChart: React.FC<RacePositionHistoryChartProps> = ({ dat
           <Tooltip 
             labelFormatter={(value) => `Race ${value}`}
             formatter={(value, name) => {
-              return [
-                `P${value}`, 
-                name === 'startPosition' ? 'Starting Position' : 'Finishing Position'
-              ];
+              if (name === 'startPosition') {
+                return [`P${value}`, 'Starting Position'];
+              }
+              if (name === 'finishPosition') {
+                return [`P${value}`, 'Finishing Position'];
+              }
+              return [value, name];
             }}
           />
           <Legend />
