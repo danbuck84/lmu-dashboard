@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { ThemeToggle } from './theme-toggle';
 import { Button } from './ui/button';
 import { toast } from 'sonner';
-import { UserCog, LogOut, User } from 'lucide-react';
+import { UserCog, LogOut, User, LayoutDashboard } from 'lucide-react';
 
 const Navigation = () => {
   const location = useLocation();
@@ -36,9 +36,15 @@ const Navigation = () => {
                 Home
               </Link>
               {isAuthenticated && (
-                <Link to="/race-log" className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${isActive('/race-log') ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
-                  Race Log
-                </Link>
+                <>
+                  <Link to="/race-log" className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${isActive('/race-log') ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
+                    Race Log
+                  </Link>
+                  <Link to="/dashboard" className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${isActive('/dashboard') ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
+                    <LayoutDashboard className="h-4 w-4 mr-1" />
+                    Dashboard
+                  </Link>
+                </>
               )}
             </div>
           </div>
