@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from "sonner";
 
 type User = {
+  id: string; // Add the id field
   username: string;
   email: string;
   isLoggedIn: boolean;
@@ -40,6 +41,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (session) {
           const userData = session.user.user_metadata;
           setUser({
+            id: session.user.id, // Include the user ID
             username: userData.username || '',
             email: session.user.email || '',
             isLoggedIn: true,
@@ -64,6 +66,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (event === 'SIGNED_IN' && session) {
         const userData = session.user.user_metadata;
         setUser({
+          id: session.user.id, // Include the user ID
           username: userData.username || '',
           email: session.user.email || '',
           isLoggedIn: true,

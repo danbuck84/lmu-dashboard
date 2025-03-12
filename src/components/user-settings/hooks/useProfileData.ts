@@ -49,7 +49,7 @@ export const useProfileData = (
           // Update form values with existing profile data
           form.reset({
             username: data.username || "",
-            country: data.country || "",
+            country: data.country_id || "", // Use country_id instead of country
             city: data.city || "",
             age: data.age || undefined,
             preferredCar: data.preferred_car_id || "",
