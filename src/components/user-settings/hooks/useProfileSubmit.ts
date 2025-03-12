@@ -22,11 +22,12 @@ export const useProfileSubmit = () => {
 
       console.log('Saving profile data:', {
         username: values.username,
-        country_id: values.country || null,
+        country: values.country || null,
         city: values.city || null,
         age: values.age || null,
         preferred_car_id: values.preferredCar || null,
         preferred_track_id: values.preferredTrack || null,
+        bio: values.bio || null,
       });
 
       // Check if profile exists
@@ -44,11 +45,12 @@ export const useProfileSubmit = () => {
           .from('profiles')
           .update({
             username: values.username,
-            country_id: values.country || null,
+            country: values.country || null,
             city: values.city || null,
             age: values.age || null,
             preferred_car_id: values.preferredCar || null,
             preferred_track_id: values.preferredTrack || null,
+            bio: values.bio || null,
             updated_at: new Date().toISOString(),
           })
           .eq('id', userUuid);
@@ -59,11 +61,12 @@ export const useProfileSubmit = () => {
           .insert({
             id: userUuid,
             username: values.username,
-            country_id: values.country || null,
+            country: values.country || null,
             city: values.city || null,
             age: values.age || null,
             preferred_car_id: values.preferredCar || null,
             preferred_track_id: values.preferredTrack || null,
+            bio: values.bio || null,
             updated_at: new Date().toISOString(),
           });
       }

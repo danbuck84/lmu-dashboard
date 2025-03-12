@@ -49,11 +49,12 @@ export const useProfileData = (
           // Update form values with existing profile data
           form.reset({
             username: data.username || "",
-            country: data.country_id || "",
+            country: data.country || "",
             city: data.city || "",
             age: data.age || undefined,
             preferredCar: data.preferred_car_id || "",
             preferredTrack: data.preferred_track_id || "",
+            bio: data.bio || "",
           });
         }
       } catch (error) {

@@ -9,6 +9,7 @@ export const formSchema = z.object({
   age: z.coerce.number().min(13).max(120).optional(),
   preferredCar: z.string().optional(),
   preferredTrack: z.string().optional(),
+  bio: z.string().max(500, { message: "Bio must be 500 characters or less" }).optional(),
 });
 
 export type ProfileFormValues = z.infer<typeof formSchema>;

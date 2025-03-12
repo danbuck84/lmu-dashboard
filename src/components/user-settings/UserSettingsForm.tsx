@@ -8,6 +8,7 @@ import { CityField } from './CityField';
 import { AgeField } from './AgeField';
 import { PreferredCarField } from './PreferredCarField';
 import { PreferredTrackField } from './PreferredTrackField';
+import { BioField } from './BioField';
 import { ProfileFormValues } from './types';
 import { UseFormReturn } from 'react-hook-form';
 
@@ -45,6 +46,8 @@ export const UserSettingsForm = ({
             <PreferredCarField control={form.control} cars={cars} />
             <PreferredTrackField control={form.control} tracks={tracks} />
           </div>
+          
+          <BioField control={form.control} />
         </div>
         
         <Button type="submit" disabled={isSubmitting}>

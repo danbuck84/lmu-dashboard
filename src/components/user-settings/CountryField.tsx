@@ -33,7 +33,7 @@ export const CountryField = ({ control, countries }: CountryFieldProps) => (
         <Select 
           onValueChange={field.onChange} 
           defaultValue={field.value}
-          value={field.value}
+          value={field.value || ""}
         >
           <FormControl>
             <SelectTrigger>
@@ -42,16 +42,7 @@ export const CountryField = ({ control, countries }: CountryFieldProps) => (
           </FormControl>
           <SelectContent className="max-h-[300px]">
             {countries.map((country) => (
-              <SelectItem key={country.cca2} value={country.cca2} className="flex items-center gap-2">
-                {country.flags && (
-                  <span className="inline-block w-5 h-3 mr-2 align-middle">
-                    <img 
-                      src={country.flags.svg || country.flags.png} 
-                      alt={`Flag of ${country.name.common}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </span>
-                )}
+              <SelectItem key={country.name.common} value={country.name.common}>
                 {country.name.common}
               </SelectItem>
             ))}

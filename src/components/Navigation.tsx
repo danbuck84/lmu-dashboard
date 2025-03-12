@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { ThemeToggle } from './theme-toggle';
 import { Button } from './ui/button';
 import { toast } from 'sonner';
-import { UserCog, LogOut, TrendingUp } from 'lucide-react';
+import { UserCog, LogOut, User } from 'lucide-react';
 
 const Navigation = () => {
   const location = useLocation();
@@ -47,6 +47,18 @@ const Navigation = () => {
             
             {isAuthenticated ? (
               <>
+                {user?.id && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => navigate(`/profile/${user.id}`)}
+                    className="flex items-center gap-1"
+                  >
+                    <User className="h-4 w-4" /> 
+                    Profile
+                  </Button>
+                )}
+                
                 <Button 
                   variant="ghost" 
                   size="sm"

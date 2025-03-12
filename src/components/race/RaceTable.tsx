@@ -62,10 +62,10 @@ const RaceTable = ({ races, loading, onRaceDeleted, onRaceUpdated }: RaceTablePr
     }
   };
   
-  // Add race numbers to the races
+  // Add race numbers to the races - add in reverse order so newest races have highest numbers
   const racesWithNumbers = races.map((race, index) => ({
     ...race,
-    race_number: index + 1
+    race_number: races.length - index
   }));
 
   // Handle column sorting

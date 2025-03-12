@@ -6,11 +6,6 @@ export interface Country {
   name: {
     common: string;
   };
-  cca2: string;
-  flags: {
-    svg: string;
-    png: string;
-  };
 }
 
 export const useCountryData = () => {
@@ -19,7 +14,7 @@ export const useCountryData = () => {
   useEffect(() => {
     const fetchCountries = async () => {
       try {
-        const response = await fetch('https://restcountries.com/v3.1/all?fields=name,cca2,flags');
+        const response = await fetch('https://restcountries.com/v3.1/all?fields=name');
         if (!response.ok) {
           throw new Error('Failed to fetch countries');
         }
