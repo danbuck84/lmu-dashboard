@@ -1,8 +1,7 @@
-
 import React from 'react';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import ChartCard from './ChartCard';
-import { TrackUsageData } from '@/components/race/useRaceAnalytics';
+import { TrackUsageData } from '@/components/race/analytics/types';
 
 type TrackUsageChartProps = {
   data: TrackUsageData[];

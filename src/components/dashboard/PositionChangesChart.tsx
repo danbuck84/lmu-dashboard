@@ -2,7 +2,7 @@
 import React from 'react';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from 'recharts';
 import ChartCard from './ChartCard';
-import { PositionChangeData } from '@/components/race/useRaceAnalytics';
+import { PositionChangeData } from '@/components/race/analytics/types';
 
 // Custom colors for position changes
 const POSITION_COLORS = {

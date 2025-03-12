@@ -1,8 +1,7 @@
-
 import React from 'react';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import ChartCard from './ChartCard';
-import { RaceHistoryData } from '@/components/race/useRaceAnalytics';
+import { RaceHistoryData } from '@/components/race/analytics/types';
 
 type RacePositionHistoryChartProps = {
   data: RaceHistoryData[];
