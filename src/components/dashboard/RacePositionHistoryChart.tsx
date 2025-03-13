@@ -9,7 +9,8 @@ type RacePositionHistoryChartProps = {
 };
 
 const RacePositionHistoryChart: React.FC<RacePositionHistoryChartProps> = ({ data }) => {
-  // Sort the data by raceId to ensure races are displayed in sequential order (1, 2, 3, etc.)
+  // The data should already be sorted by raceId from the calculateRacePositionHistory function
+  // but we'll sort it again here to be sure
   const sortedData = [...data].sort((a, b) => a.raceId - b.raceId);
   
   return (
