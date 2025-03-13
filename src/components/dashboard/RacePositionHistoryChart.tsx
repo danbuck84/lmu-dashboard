@@ -9,7 +9,7 @@ type RacePositionHistoryChartProps = {
 };
 
 const RacePositionHistoryChart: React.FC<RacePositionHistoryChartProps> = ({ data }) => {
-  // Sort the data by raceId to ensure correct ordering
+  // Sort the data by raceId to ensure races are displayed in sequential order (1, 2, 3, etc.)
   const sortedData = [...data].sort((a, b) => a.raceId - b.raceId);
   
   return (
@@ -21,8 +21,8 @@ const RacePositionHistoryChart: React.FC<RacePositionHistoryChartProps> = ({ dat
             dataKey="raceId" 
             label={{ value: 'Race Number', position: 'insideBottomRight', offset: -5 }}
             type="number"
-            domain={['dataMin', 'dataMax']}
-            tickCount={10}
+            domain={[1, 'dataMax']} // Start from 1 to match race IDs
+            tickCount={Math.min(10, sortedData.length)} // Adjust tick count based on data size
             allowDecimals={false}
           />
           <YAxis 
