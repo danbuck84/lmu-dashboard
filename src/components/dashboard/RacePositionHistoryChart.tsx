@@ -9,14 +9,21 @@ type RacePositionHistoryChartProps = {
 };
 
 const RacePositionHistoryChart: React.FC<RacePositionHistoryChartProps> = ({ data }) => {
+  // Sort the data by raceId to ensure correct ordering
+  const sortedData = [...data].sort((a, b) => a.raceId - b.raceId);
+  
   return (
     <ChartCard title="Race Position History" className="col-span-1 md:col-span-2">
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={data}>
+        <LineChart data={sortedData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis 
             dataKey="raceId" 
             label={{ value: 'Race Number', position: 'insideBottomRight', offset: -5 }}
+            type="number"
+            domain={['dataMin', 'dataMax']}
+            tickCount={10}
+            allowDecimals={false}
           />
           <YAxis 
             reversed 
