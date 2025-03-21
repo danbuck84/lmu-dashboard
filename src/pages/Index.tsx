@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
@@ -192,13 +191,13 @@ const Index = () => {
             <div>
               <h3 className="font-bold text-lg mb-4">Legal</h3>
               <ul className="space-y-2">
-                <li><Button variant="link" className="p-0 h-auto">Privacy Policy</Button></li>
-                <li><Button variant="link" className="p-0 h-auto">Terms of Service</Button></li>
+                <li><Button variant="link" className="p-0 h-auto" onClick={() => navigate('/privacy-policy')}>Privacy Policy</Button></li>
+                <li><Button variant="link" className="p-0 h-auto" onClick={() => navigate('/terms-of-service')}>Terms of Service</Button></li>
               </ul>
             </div>
           </div>
           <div className="text-center mt-8 text-sm text-muted-foreground">
-            © 2023 Le Mans Ultimate Tracker. All rights reserved.
+            © 2025 Le Mans Ultimate Tracker by Daniel Buck. All rights reserved.
           </div>
         </div>
       </footer>
