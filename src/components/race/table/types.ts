@@ -16,6 +16,7 @@ export type Race = {
   car_id?: string;
   track_layout_id?: string;
   race_number?: number; // Added for display purposes only
+  incidents?: number; // Added for tracking race incidents
 };
 
 export type SortField = 
