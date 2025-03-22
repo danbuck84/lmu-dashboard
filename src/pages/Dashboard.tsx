@@ -12,6 +12,7 @@ import RatingChangesChart from '@/components/dashboard/RatingChangesChart';
 import CarUsageChart from '@/components/dashboard/CarUsageChart';
 import TrackUsageChart from '@/components/dashboard/TrackUsageChart';
 import RacePositionHistoryChart from '@/components/dashboard/RacePositionHistoryChart';
+import IncidentsParetoChart from '@/components/dashboard/IncidentsParetoChart';
 
 const Dashboard = () => {
   const { isAuthenticated } = useAuth();
@@ -23,7 +24,8 @@ const Dashboard = () => {
     carUsage,
     trackUsage,
     ratingChanges,
-    racePositionHistory
+    racePositionHistory,
+    paretoData
   } = useRaceAnalytics(races);
 
   // Check if user is authenticated
@@ -46,6 +48,7 @@ const Dashboard = () => {
       <CarUsageChart data={carUsage} />
       <TrackUsageChart data={trackUsage} />
       <RacePositionHistoryChart data={racePositionHistory} />
+      <IncidentsParetoChart data={paretoData} />
     </DashboardLayout>
   );
 };

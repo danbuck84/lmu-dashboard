@@ -7,6 +7,7 @@ import { calculateCarUsage } from './analytics/calculateCarUsage';
 import { calculateTrackUsage } from './analytics/calculateTrackUsage';
 import { calculateRatingChanges } from './analytics/calculateRatingChanges';
 import { calculateRacePositionHistory } from './analytics/calculateRacePositionHistory';
+import { calculateParetoData } from './analytics/calculateParetoData';
 
 // Re-export types from the analytics modules
 export type { 
@@ -17,6 +18,7 @@ export type {
   RatingChangesData,
   RaceHistoryData
 } from './analytics/types';
+export type { ParetoData } from './analytics/calculateParetoData';
 
 export function useRaceAnalytics(races: Race[]) {
   // Sort races by date for chronological analysis
@@ -56,12 +58,18 @@ export function useRaceAnalytics(races: Race[]) {
     return calculateRacePositionHistory(sortedRaces);
   }, [sortedRaces]);
 
+  // Pareto chart for incidents by track
+  const paretoData = useMemo(() => {
+    return calculateParetoData(races);
+  }, [races]);
+
   return {
     racesPerMonth,
     positionChanges,
     carUsage,
     trackUsage,
     ratingChanges,
-    racePositionHistory
+    racePositionHistory,
+    paretoData
   };
 }
