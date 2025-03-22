@@ -21,16 +21,16 @@ interface IncidentsParetoChartProps {
 const IncidentsParetoChart: React.FC<IncidentsParetoChartProps> = ({ data }) => {
   if (!data || data.length === 0) {
     return (
-      <ChartCard title="Incidents by Track (Pareto)">
+      <ChartCard title="Position Improvements by Track (Pareto)">
         <div className="flex h-full items-center justify-center">
-          <p className="text-muted-foreground">No incident data available</p>
+          <p className="text-muted-foreground">No improvement data available</p>
         </div>
       </ChartCard>
     );
   }
 
   return (
-    <ChartCard title="Incidents by Track (Pareto)">
+    <ChartCard title="Position Improvements by Track (Pareto)">
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart
           data={data}
@@ -49,7 +49,7 @@ const IncidentsParetoChart: React.FC<IncidentsParetoChartProps> = ({ data }) => 
           <YAxis yAxisId="right" orientation="right" domain={[0, 100]} unit="%" />
           <Tooltip />
           <Legend />
-          <Bar yAxisId="left" dataKey="value" name="Incidents" fill="#8884d8" barSize={30} />
+          <Bar yAxisId="left" dataKey="value" name="Position Gains" fill="#4ade80" barSize={30} />
           <Line yAxisId="right" type="monotone" dataKey="cumulative" name="Cumulative %" stroke="#ff7300" />
         </ComposedChart>
       </ResponsiveContainer>

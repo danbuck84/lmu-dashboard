@@ -8,18 +8,24 @@ export type ParetoData = {
 };
 
 export function calculateParetoData(races: Race[]): ParetoData[] {
-  // Group incidents by track
-  const incidentsByTrack: Record<string, number> = {};
+  // Group position improvements by track
+  const improvementsByTrack: Record<string, number> = {};
   
   races.forEach(race => {
-    if (race.incidents !== undefined && race.track_layouts?.tracks?.name) {
+    if (race.track_layouts?.tracks?.name) {
       const trackName = race.track_layouts.tracks.name;
-      incidentsByTrack[trackName] = (incidentsByTrack[trackName] || 0) + race.incidents;
+      // Calculate position improvement (start - finish). Positive = improved
+      const improvement = race.start_position - race.finish_position;
+      
+      // Only count positive improvements
+      if (improvement > 0) {
+        improvementsByTrack[trackName] = (improvementsByTrack[trackName] || 0) + improvement;
+      }
     }
   });
   
-  // Convert to array and sort by incident count (descending)
-  const sortedData = Object.entries(incidentsByTrack)
+  // Convert to array and sort by improvement count (descending)
+  const sortedData = Object.entries(improvementsByTrack)
     .map(([name, value]) => ({ name, value }))
     .sort((a, b) => b.value - a.value);
   
@@ -29,14 +35,14 @@ export function calculateParetoData(races: Race[]): ParetoData[] {
   }
   
   // Calculate cumulative values
-  const totalIncidents = sortedData.reduce((sum, item) => sum + item.value, 0);
+  const totalImprovements = sortedData.reduce((sum, item) => sum + item.value, 0);
   let cumulative = 0;
   
   return sortedData.map(item => {
     cumulative += item.value;
     return {
       ...item,
-      cumulative: (cumulative / totalIncidents) * 100
+      cumulative: (cumulative / totalImprovements) * 100
     };
   });
 }
